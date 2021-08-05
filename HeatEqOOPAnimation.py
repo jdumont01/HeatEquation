@@ -39,9 +39,10 @@ class HeatOnRectangle():
         self.uAnimation = np.zeros([len(self.x), len(self.y), self.frames + 1], float)
         
         #init graphical output
-        self.fig = plt.figure()                     # Create figure object
-        self.ax = Axes3D(self.fig)                  # Create axes object
-        self.surf, = plt.plot([], [], [])           # Create empty 3D line object
+        self.fig = plt.figure()                               # Create figure object
+        self.ax = Axes3D(self.fig, auto_add_to_figure=False)  # Create axes object
+        self.fig.add_axes(self.ax)
+        self.surf, = plt.plot([], [], [])                     # Create empty 3D line object
         self.ax.set_xlabel('x')
         self.ax.set_ylabel('y')
         self.ax.set_zlabel('u(x,y,t)')
@@ -66,8 +67,8 @@ class HeatOnRectangle():
 
     def applyInitialConditionsAnim(self):
         #find some grid element near the center
-        a = np.int(np.floor(len(self.x)/2))
-        b = np.int(np.floor(len(self.y)/2))
+        a = np.int64(np.floor(len(self.x)/2))
+        b = np.int64(np.floor(len(self.y)/2))
                 
         self.uAnimation[a-1:a+1, b-1:b+2, 0] = 50000.0
 
@@ -84,7 +85,7 @@ class HeatOnRectangle():
         
         print (a,b)
         u[a-1:a+1, b-1:b+2] = 50000.0
-
+ 
         if (self.bDebug == True):
             print (u[a, b])
             print (u)
