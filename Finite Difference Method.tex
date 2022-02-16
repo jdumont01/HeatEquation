@@ -1,0 +1,2143 @@
+\documentclass[11pt]{article}
+
+    \usepackage[breakable]{tcolorbox}
+    \usepackage{parskip} % Stop auto-indenting (to mimic markdown behaviour)
+    
+
+    % Basic figure setup, for now with no caption control since it's done
+    % automatically by Pandoc (which extracts ![](path) syntax from Markdown).
+    \usepackage{graphicx}
+    % Maintain compatibility with old templates. Remove in nbconvert 6.0
+    \let\Oldincludegraphics\includegraphics
+    % Ensure that by default, figures have no caption (until we provide a
+    % proper Figure object with a Caption API and a way to capture that
+    % in the conversion process - todo).
+    \usepackage{caption}
+    \DeclareCaptionFormat{nocaption}{}
+    \captionsetup{format=nocaption,aboveskip=0pt,belowskip=0pt}
+
+    \usepackage{float}
+    \floatplacement{figure}{H} % forces figures to be placed at the correct location
+    \usepackage{xcolor} % Allow colors to be defined
+    \usepackage{enumerate} % Needed for markdown enumerations to work
+    \usepackage{geometry} % Used to adjust the document margins
+    \usepackage{amsmath} % Equations
+    \usepackage{amssymb} % Equations
+    \usepackage{textcomp} % defines textquotesingle
+    % Hack from http://tex.stackexchange.com/a/47451/13684:
+    \AtBeginDocument{%
+        \def\PYZsq{\textquotesingle}% Upright quotes in Pygmentized code
+    }
+    \usepackage{upquote} % Upright quotes for verbatim code
+    \usepackage{eurosym} % defines \euro
+
+    \usepackage{iftex}
+    \ifPDFTeX
+        \usepackage[T1]{fontenc}
+        \IfFileExists{alphabeta.sty}{
+              \usepackage{alphabeta}
+          }{
+              \usepackage[mathletters]{ucs}
+              \usepackage[utf8x]{inputenc}
+          }
+    \else
+        \usepackage{fontspec}
+        \usepackage{unicode-math}
+    \fi
+
+    \usepackage{fancyvrb} % verbatim replacement that allows latex
+    \usepackage{grffile} % extends the file name processing of package graphics 
+                         % to support a larger range
+    \makeatletter % fix for old versions of grffile with XeLaTeX
+    \@ifpackagelater{grffile}{2019/11/01}
+    {
+      % Do nothing on new versions
+    }
+    {
+      \def\Gread@@xetex#1{%
+        \IfFileExists{"\Gin@base".bb}%
+        {\Gread@eps{\Gin@base.bb}}%
+        {\Gread@@xetex@aux#1}%
+      }
+    }
+    \makeatother
+    \usepackage[Export]{adjustbox} % Used to constrain images to a maximum size
+    \adjustboxset{max size={0.9\linewidth}{0.9\paperheight}}
+
+    % The hyperref package gives us a pdf with properly built
+    % internal navigation ('pdf bookmarks' for the table of contents,
+    % internal cross-reference links, web links for URLs, etc.)
+    \usepackage{hyperref}
+    % The default LaTeX title has an obnoxious amount of whitespace. By default,
+    % titling removes some of it. It also provides customization options.
+    \usepackage{titling}
+    \usepackage{longtable} % longtable support required by pandoc >1.10
+    \usepackage{booktabs}  % table support for pandoc > 1.12.2
+    \usepackage{array}     % table support for pandoc >= 2.11.3
+    \usepackage{calc}      % table minipage width calculation for pandoc >= 2.11.1
+    \usepackage[inline]{enumitem} % IRkernel/repr support (it uses the enumerate* environment)
+    \usepackage[normalem]{ulem} % ulem is needed to support strikethroughs (\sout)
+                                % normalem makes italics be italics, not underlines
+    \usepackage{mathrsfs}
+    
+
+    
+    % Colors for the hyperref package
+    \definecolor{urlcolor}{rgb}{0,.145,.698}
+    \definecolor{linkcolor}{rgb}{.71,0.21,0.01}
+    \definecolor{citecolor}{rgb}{.12,.54,.11}
+
+    % ANSI colors
+    \definecolor{ansi-black}{HTML}{3E424D}
+    \definecolor{ansi-black-intense}{HTML}{282C36}
+    \definecolor{ansi-red}{HTML}{E75C58}
+    \definecolor{ansi-red-intense}{HTML}{B22B31}
+    \definecolor{ansi-green}{HTML}{00A250}
+    \definecolor{ansi-green-intense}{HTML}{007427}
+    \definecolor{ansi-yellow}{HTML}{DDB62B}
+    \definecolor{ansi-yellow-intense}{HTML}{B27D12}
+    \definecolor{ansi-blue}{HTML}{208FFB}
+    \definecolor{ansi-blue-intense}{HTML}{0065CA}
+    \definecolor{ansi-magenta}{HTML}{D160C4}
+    \definecolor{ansi-magenta-intense}{HTML}{A03196}
+    \definecolor{ansi-cyan}{HTML}{60C6C8}
+    \definecolor{ansi-cyan-intense}{HTML}{258F8F}
+    \definecolor{ansi-white}{HTML}{C5C1B4}
+    \definecolor{ansi-white-intense}{HTML}{A1A6B2}
+    \definecolor{ansi-default-inverse-fg}{HTML}{FFFFFF}
+    \definecolor{ansi-default-inverse-bg}{HTML}{000000}
+
+    % common color for the border for error outputs.
+    \definecolor{outerrorbackground}{HTML}{FFDFDF}
+
+    % commands and environments needed by pandoc snippets
+    % extracted from the output of `pandoc -s`
+    \providecommand{\tightlist}{%
+      \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+    \DefineVerbatimEnvironment{Highlighting}{Verbatim}{commandchars=\\\{\}}
+    % Add ',fontsize=\small' for more characters per line
+    \newenvironment{Shaded}{}{}
+    \newcommand{\KeywordTok}[1]{\textcolor[rgb]{0.00,0.44,0.13}{\textbf{{#1}}}}
+    \newcommand{\DataTypeTok}[1]{\textcolor[rgb]{0.56,0.13,0.00}{{#1}}}
+    \newcommand{\DecValTok}[1]{\textcolor[rgb]{0.25,0.63,0.44}{{#1}}}
+    \newcommand{\BaseNTok}[1]{\textcolor[rgb]{0.25,0.63,0.44}{{#1}}}
+    \newcommand{\FloatTok}[1]{\textcolor[rgb]{0.25,0.63,0.44}{{#1}}}
+    \newcommand{\CharTok}[1]{\textcolor[rgb]{0.25,0.44,0.63}{{#1}}}
+    \newcommand{\StringTok}[1]{\textcolor[rgb]{0.25,0.44,0.63}{{#1}}}
+    \newcommand{\CommentTok}[1]{\textcolor[rgb]{0.38,0.63,0.69}{\textit{{#1}}}}
+    \newcommand{\OtherTok}[1]{\textcolor[rgb]{0.00,0.44,0.13}{{#1}}}
+    \newcommand{\AlertTok}[1]{\textcolor[rgb]{1.00,0.00,0.00}{\textbf{{#1}}}}
+    \newcommand{\FunctionTok}[1]{\textcolor[rgb]{0.02,0.16,0.49}{{#1}}}
+    \newcommand{\RegionMarkerTok}[1]{{#1}}
+    \newcommand{\ErrorTok}[1]{\textcolor[rgb]{1.00,0.00,0.00}{\textbf{{#1}}}}
+    \newcommand{\NormalTok}[1]{{#1}}
+    
+    % Additional commands for more recent versions of Pandoc
+    \newcommand{\ConstantTok}[1]{\textcolor[rgb]{0.53,0.00,0.00}{{#1}}}
+    \newcommand{\SpecialCharTok}[1]{\textcolor[rgb]{0.25,0.44,0.63}{{#1}}}
+    \newcommand{\VerbatimStringTok}[1]{\textcolor[rgb]{0.25,0.44,0.63}{{#1}}}
+    \newcommand{\SpecialStringTok}[1]{\textcolor[rgb]{0.73,0.40,0.53}{{#1}}}
+    \newcommand{\ImportTok}[1]{{#1}}
+    \newcommand{\DocumentationTok}[1]{\textcolor[rgb]{0.73,0.13,0.13}{\textit{{#1}}}}
+    \newcommand{\AnnotationTok}[1]{\textcolor[rgb]{0.38,0.63,0.69}{\textbf{\textit{{#1}}}}}
+    \newcommand{\CommentVarTok}[1]{\textcolor[rgb]{0.38,0.63,0.69}{\textbf{\textit{{#1}}}}}
+    \newcommand{\VariableTok}[1]{\textcolor[rgb]{0.10,0.09,0.49}{{#1}}}
+    \newcommand{\ControlFlowTok}[1]{\textcolor[rgb]{0.00,0.44,0.13}{\textbf{{#1}}}}
+    \newcommand{\OperatorTok}[1]{\textcolor[rgb]{0.40,0.40,0.40}{{#1}}}
+    \newcommand{\BuiltInTok}[1]{{#1}}
+    \newcommand{\ExtensionTok}[1]{{#1}}
+    \newcommand{\PreprocessorTok}[1]{\textcolor[rgb]{0.74,0.48,0.00}{{#1}}}
+    \newcommand{\AttributeTok}[1]{\textcolor[rgb]{0.49,0.56,0.16}{{#1}}}
+    \newcommand{\InformationTok}[1]{\textcolor[rgb]{0.38,0.63,0.69}{\textbf{\textit{{#1}}}}}
+    \newcommand{\WarningTok}[1]{\textcolor[rgb]{0.38,0.63,0.69}{\textbf{\textit{{#1}}}}}
+    
+    
+    % Define a nice break command that doesn't care if a line doesn't already
+    % exist.
+    \def\br{\hspace*{\fill} \\* }
+    % Math Jax compatibility definitions
+    \def\gt{>}
+    \def\lt{<}
+    \let\Oldtex\TeX
+    \let\Oldlatex\LaTeX
+    \renewcommand{\TeX}{\textrm{\Oldtex}}
+    \renewcommand{\LaTeX}{\textrm{\Oldlatex}}
+    % Document parameters
+    % Document title
+    \title{Finite Difference Method}
+    
+    
+    
+    
+    
+% Pygments definitions
+\makeatletter
+\def\PY@reset{\let\PY@it=\relax \let\PY@bf=\relax%
+    \let\PY@ul=\relax \let\PY@tc=\relax%
+    \let\PY@bc=\relax \let\PY@ff=\relax}
+\def\PY@tok#1{\csname PY@tok@#1\endcsname}
+\def\PY@toks#1+{\ifx\relax#1\empty\else%
+    \PY@tok{#1}\expandafter\PY@toks\fi}
+\def\PY@do#1{\PY@bc{\PY@tc{\PY@ul{%
+    \PY@it{\PY@bf{\PY@ff{#1}}}}}}}
+\def\PY#1#2{\PY@reset\PY@toks#1+\relax+\PY@do{#2}}
+
+\@namedef{PY@tok@w}{\def\PY@tc##1{\textcolor[rgb]{0.73,0.73,0.73}{##1}}}
+\@namedef{PY@tok@c}{\let\PY@it=\textit\def\PY@tc##1{\textcolor[rgb]{0.25,0.50,0.50}{##1}}}
+\@namedef{PY@tok@cp}{\def\PY@tc##1{\textcolor[rgb]{0.74,0.48,0.00}{##1}}}
+\@namedef{PY@tok@k}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\@namedef{PY@tok@kp}{\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\@namedef{PY@tok@kt}{\def\PY@tc##1{\textcolor[rgb]{0.69,0.00,0.25}{##1}}}
+\@namedef{PY@tok@o}{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\@namedef{PY@tok@ow}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.67,0.13,1.00}{##1}}}
+\@namedef{PY@tok@nb}{\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\@namedef{PY@tok@nf}{\def\PY@tc##1{\textcolor[rgb]{0.00,0.00,1.00}{##1}}}
+\@namedef{PY@tok@nc}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.00,1.00}{##1}}}
+\@namedef{PY@tok@nn}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.00,1.00}{##1}}}
+\@namedef{PY@tok@ne}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.82,0.25,0.23}{##1}}}
+\@namedef{PY@tok@nv}{\def\PY@tc##1{\textcolor[rgb]{0.10,0.09,0.49}{##1}}}
+\@namedef{PY@tok@no}{\def\PY@tc##1{\textcolor[rgb]{0.53,0.00,0.00}{##1}}}
+\@namedef{PY@tok@nl}{\def\PY@tc##1{\textcolor[rgb]{0.63,0.63,0.00}{##1}}}
+\@namedef{PY@tok@ni}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.60,0.60,0.60}{##1}}}
+\@namedef{PY@tok@na}{\def\PY@tc##1{\textcolor[rgb]{0.49,0.56,0.16}{##1}}}
+\@namedef{PY@tok@nt}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\@namedef{PY@tok@nd}{\def\PY@tc##1{\textcolor[rgb]{0.67,0.13,1.00}{##1}}}
+\@namedef{PY@tok@s}{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\@namedef{PY@tok@sd}{\let\PY@it=\textit\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\@namedef{PY@tok@si}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.73,0.40,0.53}{##1}}}
+\@namedef{PY@tok@se}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.73,0.40,0.13}{##1}}}
+\@namedef{PY@tok@sr}{\def\PY@tc##1{\textcolor[rgb]{0.73,0.40,0.53}{##1}}}
+\@namedef{PY@tok@ss}{\def\PY@tc##1{\textcolor[rgb]{0.10,0.09,0.49}{##1}}}
+\@namedef{PY@tok@sx}{\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\@namedef{PY@tok@m}{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\@namedef{PY@tok@gh}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.00,0.50}{##1}}}
+\@namedef{PY@tok@gu}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.50,0.00,0.50}{##1}}}
+\@namedef{PY@tok@gd}{\def\PY@tc##1{\textcolor[rgb]{0.63,0.00,0.00}{##1}}}
+\@namedef{PY@tok@gi}{\def\PY@tc##1{\textcolor[rgb]{0.00,0.63,0.00}{##1}}}
+\@namedef{PY@tok@gr}{\def\PY@tc##1{\textcolor[rgb]{1.00,0.00,0.00}{##1}}}
+\@namedef{PY@tok@ge}{\let\PY@it=\textit}
+\@namedef{PY@tok@gs}{\let\PY@bf=\textbf}
+\@namedef{PY@tok@gp}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.00,0.50}{##1}}}
+\@namedef{PY@tok@go}{\def\PY@tc##1{\textcolor[rgb]{0.53,0.53,0.53}{##1}}}
+\@namedef{PY@tok@gt}{\def\PY@tc##1{\textcolor[rgb]{0.00,0.27,0.87}{##1}}}
+\@namedef{PY@tok@err}{\def\PY@bc##1{{\setlength{\fboxsep}{\string -\fboxrule}\fcolorbox[rgb]{1.00,0.00,0.00}{1,1,1}{\strut ##1}}}}
+\@namedef{PY@tok@kc}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\@namedef{PY@tok@kd}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\@namedef{PY@tok@kn}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\@namedef{PY@tok@kr}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\@namedef{PY@tok@bp}{\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\@namedef{PY@tok@fm}{\def\PY@tc##1{\textcolor[rgb]{0.00,0.00,1.00}{##1}}}
+\@namedef{PY@tok@vc}{\def\PY@tc##1{\textcolor[rgb]{0.10,0.09,0.49}{##1}}}
+\@namedef{PY@tok@vg}{\def\PY@tc##1{\textcolor[rgb]{0.10,0.09,0.49}{##1}}}
+\@namedef{PY@tok@vi}{\def\PY@tc##1{\textcolor[rgb]{0.10,0.09,0.49}{##1}}}
+\@namedef{PY@tok@vm}{\def\PY@tc##1{\textcolor[rgb]{0.10,0.09,0.49}{##1}}}
+\@namedef{PY@tok@sa}{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\@namedef{PY@tok@sb}{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\@namedef{PY@tok@sc}{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\@namedef{PY@tok@dl}{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\@namedef{PY@tok@s2}{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\@namedef{PY@tok@sh}{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\@namedef{PY@tok@s1}{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\@namedef{PY@tok@mb}{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\@namedef{PY@tok@mf}{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\@namedef{PY@tok@mh}{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\@namedef{PY@tok@mi}{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\@namedef{PY@tok@il}{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\@namedef{PY@tok@mo}{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\@namedef{PY@tok@ch}{\let\PY@it=\textit\def\PY@tc##1{\textcolor[rgb]{0.25,0.50,0.50}{##1}}}
+\@namedef{PY@tok@cm}{\let\PY@it=\textit\def\PY@tc##1{\textcolor[rgb]{0.25,0.50,0.50}{##1}}}
+\@namedef{PY@tok@cpf}{\let\PY@it=\textit\def\PY@tc##1{\textcolor[rgb]{0.25,0.50,0.50}{##1}}}
+\@namedef{PY@tok@c1}{\let\PY@it=\textit\def\PY@tc##1{\textcolor[rgb]{0.25,0.50,0.50}{##1}}}
+\@namedef{PY@tok@cs}{\let\PY@it=\textit\def\PY@tc##1{\textcolor[rgb]{0.25,0.50,0.50}{##1}}}
+
+\def\PYZbs{\char`\\}
+\def\PYZus{\char`\_}
+\def\PYZob{\char`\{}
+\def\PYZcb{\char`\}}
+\def\PYZca{\char`\^}
+\def\PYZam{\char`\&}
+\def\PYZlt{\char`\<}
+\def\PYZgt{\char`\>}
+\def\PYZsh{\char`\#}
+\def\PYZpc{\char`\%}
+\def\PYZdl{\char`\$}
+\def\PYZhy{\char`\-}
+\def\PYZsq{\char`\'}
+\def\PYZdq{\char`\"}
+\def\PYZti{\char`\~}
+% for compatibility with earlier versions
+\def\PYZat{@}
+\def\PYZlb{[}
+\def\PYZrb{]}
+\makeatother
+
+
+    % For linebreaks inside Verbatim environment from package fancyvrb. 
+    \makeatletter
+        \newbox\Wrappedcontinuationbox 
+        \newbox\Wrappedvisiblespacebox 
+        \newcommand*\Wrappedvisiblespace {\textcolor{red}{\textvisiblespace}} 
+        \newcommand*\Wrappedcontinuationsymbol {\textcolor{red}{\llap{\tiny$\m@th\hookrightarrow$}}} 
+        \newcommand*\Wrappedcontinuationindent {3ex } 
+        \newcommand*\Wrappedafterbreak {\kern\Wrappedcontinuationindent\copy\Wrappedcontinuationbox} 
+        % Take advantage of the already applied Pygments mark-up to insert 
+        % potential linebreaks for TeX processing. 
+        %        {, <, #, %, $, ' and ": go to next line. 
+        %        _, }, ^, &, >, - and ~: stay at end of broken line. 
+        % Use of \textquotesingle for straight quote. 
+        \newcommand*\Wrappedbreaksatspecials {% 
+            \def\PYGZus{\discretionary{\char`\_}{\Wrappedafterbreak}{\char`\_}}% 
+            \def\PYGZob{\discretionary{}{\Wrappedafterbreak\char`\{}{\char`\{}}% 
+            \def\PYGZcb{\discretionary{\char`\}}{\Wrappedafterbreak}{\char`\}}}% 
+            \def\PYGZca{\discretionary{\char`\^}{\Wrappedafterbreak}{\char`\^}}% 
+            \def\PYGZam{\discretionary{\char`\&}{\Wrappedafterbreak}{\char`\&}}% 
+            \def\PYGZlt{\discretionary{}{\Wrappedafterbreak\char`\<}{\char`\<}}% 
+            \def\PYGZgt{\discretionary{\char`\>}{\Wrappedafterbreak}{\char`\>}}% 
+            \def\PYGZsh{\discretionary{}{\Wrappedafterbreak\char`\#}{\char`\#}}% 
+            \def\PYGZpc{\discretionary{}{\Wrappedafterbreak\char`\%}{\char`\%}}% 
+            \def\PYGZdl{\discretionary{}{\Wrappedafterbreak\char`\$}{\char`\$}}% 
+            \def\PYGZhy{\discretionary{\char`\-}{\Wrappedafterbreak}{\char`\-}}% 
+            \def\PYGZsq{\discretionary{}{\Wrappedafterbreak\textquotesingle}{\textquotesingle}}% 
+            \def\PYGZdq{\discretionary{}{\Wrappedafterbreak\char`\"}{\char`\"}}% 
+            \def\PYGZti{\discretionary{\char`\~}{\Wrappedafterbreak}{\char`\~}}% 
+        } 
+        % Some characters . , ; ? ! / are not pygmentized. 
+        % This macro makes them "active" and they will insert potential linebreaks 
+        \newcommand*\Wrappedbreaksatpunct {% 
+            \lccode`\~`\.\lowercase{\def~}{\discretionary{\hbox{\char`\.}}{\Wrappedafterbreak}{\hbox{\char`\.}}}% 
+            \lccode`\~`\,\lowercase{\def~}{\discretionary{\hbox{\char`\,}}{\Wrappedafterbreak}{\hbox{\char`\,}}}% 
+            \lccode`\~`\;\lowercase{\def~}{\discretionary{\hbox{\char`\;}}{\Wrappedafterbreak}{\hbox{\char`\;}}}% 
+            \lccode`\~`\:\lowercase{\def~}{\discretionary{\hbox{\char`\:}}{\Wrappedafterbreak}{\hbox{\char`\:}}}% 
+            \lccode`\~`\?\lowercase{\def~}{\discretionary{\hbox{\char`\?}}{\Wrappedafterbreak}{\hbox{\char`\?}}}% 
+            \lccode`\~`\!\lowercase{\def~}{\discretionary{\hbox{\char`\!}}{\Wrappedafterbreak}{\hbox{\char`\!}}}% 
+            \lccode`\~`\/\lowercase{\def~}{\discretionary{\hbox{\char`\/}}{\Wrappedafterbreak}{\hbox{\char`\/}}}% 
+            \catcode`\.\active
+            \catcode`\,\active 
+            \catcode`\;\active
+            \catcode`\:\active
+            \catcode`\?\active
+            \catcode`\!\active
+            \catcode`\/\active 
+            \lccode`\~`\~ 	
+        }
+    \makeatother
+
+    \let\OriginalVerbatim=\Verbatim
+    \makeatletter
+    \renewcommand{\Verbatim}[1][1]{%
+        %\parskip\z@skip
+        \sbox\Wrappedcontinuationbox {\Wrappedcontinuationsymbol}%
+        \sbox\Wrappedvisiblespacebox {\FV@SetupFont\Wrappedvisiblespace}%
+        \def\FancyVerbFormatLine ##1{\hsize\linewidth
+            \vtop{\raggedright\hyphenpenalty\z@\exhyphenpenalty\z@
+                \doublehyphendemerits\z@\finalhyphendemerits\z@
+                \strut ##1\strut}%
+        }%
+        % If the linebreak is at a space, the latter will be displayed as visible
+        % space at end of first line, and a continuation symbol starts next line.
+        % Stretch/shrink are however usually zero for typewriter font.
+        \def\FV@Space {%
+            \nobreak\hskip\z@ plus\fontdimen3\font minus\fontdimen4\font
+            \discretionary{\copy\Wrappedvisiblespacebox}{\Wrappedafterbreak}
+            {\kern\fontdimen2\font}%
+        }%
+        
+        % Allow breaks at special characters using \PYG... macros.
+        \Wrappedbreaksatspecials
+        % Breaks at punctuation characters . , ; ? ! and / need catcode=\active 	
+        \OriginalVerbatim[#1,codes*=\Wrappedbreaksatpunct]%
+    }
+    \makeatother
+
+    % Exact colors from NB
+    \definecolor{incolor}{HTML}{303F9F}
+    \definecolor{outcolor}{HTML}{D84315}
+    \definecolor{cellborder}{HTML}{CFCFCF}
+    \definecolor{cellbackground}{HTML}{F7F7F7}
+    
+    % prompt
+    \makeatletter
+    \newcommand{\boxspacing}{\kern\kvtcb@left@rule\kern\kvtcb@boxsep}
+    \makeatother
+    \newcommand{\prompt}[4]{
+        {\ttfamily\llap{{\color{#2}[#3]:\hspace{3pt}#4}}\vspace{-\baselineskip}}
+    }
+    
+
+    
+    % Prevent overflowing lines due to hard-to-break entities
+    \sloppy 
+    % Setup hyperref package
+    \hypersetup{
+      breaklinks=true,  % so long urls are correctly broken across lines
+      colorlinks=true,
+      urlcolor=urlcolor,
+      linkcolor=linkcolor,
+      citecolor=citecolor,
+      }
+    % Slightly bigger margins than the latex defaults
+    
+    \geometry{verbose,tmargin=1in,bmargin=1in,lmargin=1in,rmargin=1in}
+    
+    
+
+\begin{document}
+    
+    \maketitle
+    
+    
+
+    
+    \hypertarget{numerical-solutions}{%
+\section{Numerical Solutions}\label{numerical-solutions}}
+
+    Fun with numbers.
+
+    \hypertarget{calculating-urho-phi-t-using-the-finite-difference-method}{%
+\section{\texorpdfstring{Calculating u(\(\rho\), \(\phi\), t) Using the
+Finite Difference
+Method}{Calculating u(\textbackslash rho, \textbackslash phi, t) Using the Finite Difference Method}}\label{calculating-urho-phi-t-using-the-finite-difference-method}}
+
+    The time-dependent diffusion equation can be solved in closed form.
+However, it can be a challenge to use an infinite sum etc.
+Alternaitvely, there are other methods that can be employed to calculate
+the temperature at each point on the geometry over time. One of the
+methods is called the finite difference method. This method is based on
+using the Taylor series expansion of a fuction to calculate each
+derivative order.
+
+Starting with a fucntion f(x), the Taylor series expansion of this
+function around a point \(x_0\) at a distance of \(\pm \Delta x\) from
+\(x_0\) \begin{equation}
+\begin{split}
+f(x_0 + \Delta x) &= f(x_0) + (\Delta x) \frac{1}{1!} \frac{df(x_0)}{dx} + \frac{1}{2!}(\Delta x)^2 \frac{d^2f(x_0)}{dx^2} + \frac{1}{3!} (\Delta x)^3 \frac{d^3f(x_0)}{dx^3} + \frac{1}{4!} (\Delta x)^4 \frac{d^4f(x_0)}{dx^4} + \cdots \\
+f(x_0 - \Delta x) &= f(x_0) + (-\Delta x) \frac{1}{1!} \frac{df(x_0)}{dx} + \frac{1}{2!}(-\Delta x)^2 \frac{d^2f(x_0)}{dx^2} + \frac{1}{3!} (-\Delta x)^3 \frac{d^3f(x_0)}{dx^3} + \frac{1}{4!} (-\Delta x)^4 \frac{d^4f(x_0)}{dx^4} + \cdots \\
+&= f(x_0) - (\Delta x) \frac{1}{1!} \frac{df(x_0)}{dx} + \frac{1}{2!}(\Delta x)^2 \frac{d^2f(x_0)}{dx^2} - \frac{1}{3!} (\Delta x)^3 \frac{d^3f(x_0)}{dx^3} + \frac{1}{4!} (\Delta x)^4 \frac{d^4f(x_0)}{dx^4} + \cdots 
+\end{split}
+\end{equation}
+
+The diffusion equation requires that the first and second-order
+derivatives are calculated.\\
+\begin{equation}
+\nabla^2 u (a \hat {e_1}, b \hat {e_2}, c \hat {e_3}, t)   = \frac {\partial u}{\partial t}
+\end{equation} In rectilinear coordinates: \begin{equation}
+\frac {\partial^2 u}{\partial x^2} + \frac {\partial^2 u}{\partial y^2} = \frac {\partial u}{\partial t}
+\end{equation}
+
+and in cyclindrical coordinates: \begin{equation}
+\frac {\partial^2 u}{\partial \rho^2} + \frac{1}{\rho} \frac {\partial u}{\partial \rho} + 
+\frac{1}{\rho^2} \frac {\partial^2 u}{\partial \phi^2} = \frac {\partial u}{\partial t}
+\end{equation}
+
+The approximation for the first-order derivative can be found by taking
+the difference \(f(x_0 + \Delta x) - f(x_0 - \Delta x)\)
+\begin{equation}
+\begin{split} 
+f(x_0 + \Delta x) - f(x_0 - \Delta x) &= \left[f(x_0) + (\Delta x) \frac{df(x_0)}{dx} + \frac{1}{2!}(\Delta x)^2 \frac{d^2f(x_0)}{dx^2} + \frac{1}{3!} (\Delta x)^3 \frac{d^3f(x_0)}{dx^3} + \frac{1}{4!} (\Delta x)^4 \frac{d^4f(x_0)}{dx^4} + \cdots \right] - \left[ f(x_0) - (\Delta x) \frac{df(x_0)}{dx} + \frac{1}{2!}(\Delta x)^2 \frac{d^2f(x_0)}{dx^2} - \frac{1}{3!} (\Delta x)^3 \frac{d^3f(x_0)}{dx^3} + \frac{1}{4!} (\Delta x)^4 \frac{d^4f(x_0)}{dx^4} + \cdots \right] \\
+&= 2 (\Delta x) \frac{df(x_0)}{dx} + \frac{2 (\Delta x)^3}{3!} \frac{d^3f(x_0)}{dx^3} + \cdots \\
+&= 2 (\Delta x) \frac{df(x_0)}{dx} + \frac{(\Delta x)^3}{3} \frac{d^3f(x_0)}{dx^3} + \cdots 
+\text{odd terms}
+\end{split}
+\end{equation}
+
+If we assume that \(\Delta x \ll 1\), then we can assume that
+\((\Delta x)^3 \ll 1\) and subsequent terms can be ignored. Having said
+that, we will need to keep in mind that since we are approximating the
+value of the derivative, there will be error terms to consider to ensure
+that the final numerical solution is guaranteed to converge. More on
+this later. \begin{equation}
+\begin{split} 
+f(x_0 + \Delta x) - f(x_0 - \Delta x) &= 2 (\Delta x) \frac{df(x_0)}{dx} + O((\Delta x)^3) \\
+\frac{f(x_0 + \Delta x) - f(x_0 - \Delta x)}{2} &= (\Delta x) \frac{df(x_0)}{dx} + O((\Delta x)^3)  \\
+\frac{f(x_0 + \Delta x) - f(x_0 - \Delta x)}{2} &\approx (\Delta x) \frac{df(x_0)}{dx} \\
+\frac{df(x_0)}{dx} &\approx \frac{f(x_0 + \Delta x) - f(x_0 - \Delta x)}{2 (\Delta x)}
+\end{split}
+\end{equation}
+
+The approximation for the second-order derivative can be found by taking
+the sum \(f(x_0 + \Delta x) + f(x_0 - \Delta x)\) \begin{equation}
+\begin{split} 
+f(x_0 + \Delta x) + f(x_0 - \Delta x) &= \left[f(x_0) + (\Delta x) \frac{df(x_0)}{dx} + \frac{1}{2!}(\Delta x)^2 \frac{d^2f(x_0)}{dx^2} + \frac{1}{3!} (\Delta x)^3 \frac{d^3f(x_0)}{dx^3} + \frac{1}{4!} (\Delta x)^4 \frac{d^4f(x_0)}{dx^4} + \cdots \right] + \left[ f(x_0) - (\Delta x) \frac{df(x_0)}{dx} + \frac{1}{2!}(\Delta x)^2 \frac{d^2f(x_0)}{dx^2} - \frac{1}{3!} (\Delta x)^3 \frac{d^3f(x_0)}{dx^3} + \frac{1}{4!} (\Delta x)^4 \frac{d^4f(x_0)}{dx^4} + \cdots \right] \\
+&= 2 f(x_0) + 2 (\frac{\Delta x^2}{2!}) \frac{d^2f(x_0)}{dx^2} + 2 (\frac{\Delta x^4}{4!}) \frac{d^4f(x_0)}{dx^4} + \cdots \text{even terms}
+\end{split}
+\end{equation}
+
+Imposing the assumption that \(\Delta x \ll 1\), then we can assume that
+\((\Delta x)^2 \ll 1\) and subsequent terms can be ignored.\\
+\begin{equation}
+\begin{split} 
+f(x_0 + \Delta x) + f(x_0 - \Delta x) &= 2 f(x_0) + 2 (\frac{(\Delta x)^2}{2}) \frac{d^2f(x_0)}{dx^2} + O({\Delta x^4}) \\
+f(x_0 + \Delta x) + f(x_0 - \Delta x) &\approx 2 f(x_0) + 2 (\frac{(\Delta x)^2}{2}) \frac{d^2f(x_0)}{dx^2} \\
+f(x_0 + \Delta x) + f(x_0 - \Delta x) - 2 f(x_0) &\approx (\Delta x)^2 \frac{d^2f(x_0)}{dx^2} \\
+\Delta x^2 \frac{d^2f(x_0)}{dx^2} &\approx f(x_0 + \Delta x) + f(x_0 - \Delta x) - 2 f(x_0)  \\
+\frac{d^2f(x_0)}{dx^2} &\approx \frac{f(x_0 + \Delta x) + f(x_0 - \Delta x) - 2 f(x_0)}{(\Delta x)^2}
+\end{split}
+\end{equation}
+
+The next question is how do we use these results to calculate the
+temperature U at each point on the surface for each point in time. Since
+we have the relationship to approximate the first-order and the
+second-order derivative, we will need a way to distinguish each
+coordinate value and time. Since this is step is arbitrary, we will set
+the index i to represent the first coordinate (x or \(\rho\)), j to
+represent the second coordinate (y or \(\phi\)) and m represent some
+time increment.
+
+In rectilinear coordinates:
+
+A surface with sides X and Y and a time interval of T. The side X is
+divided into P segments, Y is divided into Q segments and the total time
+interval T is divided into R intervals: \begin{equation}
+\begin{split} 
+\Delta x &= \frac{X}{P} \\
+\Delta y &= \frac{Y}{Q} \\
+\Delta t &= \frac{T}{R}
+\end{split}
+\end{equation}
+
+and \begin{equation}
+\begin{split} 
+i \in \{0, 1, 2, \cdots, P - 1 \} \\
+j \in \{0, 1, 2, \cdots, Q - 1 \} \\
+m \in \{0, 1, 2, \cdots, R - 1 \}
+\end{split}
+\end{equation}
+
+\begin{equation}
+\begin{split} 
+u(x, y, t) &= u_{i,j}^m \\
+u(x + \Delta x, y, t) &= u_{i + 1 ,j}^m \\
+u(x - \Delta x, y, t) &= u_{i - 1 ,j}^m \\
+u(x, y + \Delta y, t) &= u_{i,j + 1}^m \\
+u(x, y - \Delta y, t) &= u_{i,j - 1}^m \\
+u(x, y, t + \Delta t) &= u_{i,j}^{m + 1} \\
+u(x, y, t - \Delta t) &= u_{i,j}^{m - 1} 
+\end{split}
+\end{equation}
+
+In cylindrical coordinates: A surface with radius \(\rho\), angular
+coordinate \(\phi\) and a time interval of T. The radius \(\rho\) is
+divided into P segments, \(\phi\) is divided into Q segments and the
+total time interval T is divided into R intervals: \begin{equation}
+\begin{split} 
+\Delta \rho &= \frac{\rho}{P} \\
+\Delta \phi &= \frac{\phi}{Q} \\
+\Delta t &= \frac{T}{R}
+\end{split}
+\end{equation}
+
+and \begin{equation}
+\begin{split} 
+i \in \{0, 1, 2, \cdots, P - 1 \} \\
+j \in \{0, 1, 2, \cdots, Q - 1 \} \\
+m \in \{0, 1, 2, \cdots, R - 1 \}
+\end{split}
+\end{equation}
+
+\begin{equation}
+\begin{split} 
+u(\rho, \phi, t) &= u_{i,j}^m \\
+u(\rho + \Delta \rho, \phi, t)  &= u_{i + 1 ,j}^m \\
+u(\rho - \Delta \rho, \phi, t) &= u_{i - 1 ,j}^m \\
+u(\rho, y + \Delta \phi, t) &= u_{i,j + 1}^m \\
+u(\rho, y - \Delta \phi, t) &= u_{i,j - 1}^m \\
+u(\rho, y, t + \Delta t) &= u_{i,j}^{m + 1} \\
+u(\rho, y, t - \Delta t) &= u_{i,j}^{m - 1} 
+\end{split}
+\end{equation}
+
+    \hypertarget{numerical-solution-in-rectilinear-coordinates}{%
+\subsection{Numerical Solution in Rectilinear
+Coordinates}\label{numerical-solution-in-rectilinear-coordinates}}
+
+    Recall the PDE for a 2-dimensional rectilinear surface: \begin{equation}
+\frac {\partial^2 u}{\partial x^2} + \frac {\partial^2 u}{\partial y^2} = \frac {\partial u}{\partial t}
+\end{equation}
+
+NOTE: Centered in space, forward in time. Combinine equations xx and yy,
+the finite difference method generates the following terms to replace
+the partial derivatives: \begin{equation}
+\begin{split} 
+\frac{df}{dt} &\approx \frac{f(x, y, t + \Delta t) - f(x, y, t)}{2 (\Delta t)} \\
+&= \frac{u_{i,j}^{m + 1} - u_{i,j}^{m}}{2 (\Delta t)} \\
+\frac{d^2f}{dx^2} &\approx \frac{f(x + \Delta x, y, t) + f(x - \Delta x, y, t) - 2 f(x, y, t)}{(\Delta x)^2} \\
+&= \frac{u_{i + 1 ,j}^m + u_{i - 1 ,j}^m - 2 u_{i,j}^m}{(\Delta x)^2} \\
+\frac{d^2f}{dy^2} &\approx \frac{f(x, y + \Delta y, t) + f(x, y - \Delta y, t) - 2 f(x, y, t)}{(\Delta y)^2} \\
+&= \frac{u_{i,j + 1}^m + u_{i,j - 1}^m - 2 u_{i,j}^m}{(\Delta y)^2}  
+\end{split} 
+\end{equation}
+
+And the PDE becomes \begin{equation}
+\begin{split}
+\underbrace{\frac{u_{i,j}^{m + 1} - u_{i,j}^{m}}{2 (\Delta t)}}_{\frac {\partial u}{\partial t}} =\underbrace{\frac{u_{i + 1 ,j}^m + u_{i - 1 ,j}^m - 2 u_{i,j}^m}{(\Delta x)^2}}_{\frac {\partial^2 u}{\partial x^2}} + \underbrace{\frac{u_{i,j + 1}^m + u_{i,j - 1}^m - 2 u_{i,j}^m}{(\Delta y)^2}}_{\frac {\partial^2 u}{\partial y^2}} 
+\end{split}
+\end{equation}
+
+The \(\Delta x\) and \(\Delta y\) terms are going to be small, but not
+too small to ensure that amount of time and memory needed to perform the
+calculation is optimized. For now, we will assume that \(\Delta x\) =
+\(\Delta y\). \begin{equation}
+\begin{split} 
+\frac{u_{i + 1 ,j}^m + u_{i - 1 ,j}^m - 2 u_{i, j}^m}{(\Delta x)^2} + \frac{u_{i,j + 1}^m + u_{i,j - 1}^m - 2 u_{i,j}^m}{(\Delta y)^2} &= \frac{u_{i,j}^{m + 1} - u_{i,j}^{m}}{2 (\Delta t)} \\
+\frac{u_{i + 1 ,j}^m + u_{i - 1 ,j}^m - 2 u_{i, j}^m}{(\Delta x)^2} + \frac{u_{i,j + 1}^m + u_{i,j - 1}^m - 2 u_{i,j}^m}{(\Delta x)^2} &= \frac{u_{i,j}^{m + 1} - u_{i,j}^{m}}{2 (\Delta t)} \\
+\frac{u_{i + 1 ,j}^m + u_{i - 1 ,j}^m - 2 u_{i, j}^m + u_{i,j + 1}^m + u_{i,j - 1}^m - 2 u_{i,j}^m}{(\Delta x)^2} &= \frac{u_{i,j}^{m + 1} - u_{i,j}^{m - 1}}{2 \Delta t} \\
+\frac{u_{i + 1 ,j}^m + u_{i - 1 ,j}^m + u_{i,j + 1}^m + u_{i,j - 1}^m - 4 u_{i,j}^m}{(\Delta x)^2} &= \frac{u_{i,j}^{m + 1} - u_{i,j}^{m}}{2 \Delta t} \\
+\frac{(2 \Delta t)}{(\Delta x)^2}(u_{i + 1 ,j}^m + u_{i - 1 ,j}^m + u_{i,j + 1}^m + u_{i,j - 1}^m - 4 u_{i,j}^m) + u_{i,j}^{m} &= u_{i,j}^{m + 1}
+\end{split}
+\end{equation}
+
+    Let's look at the first few terms. Set \begin{equation}
+s = \frac{(2 \Delta t)}{(\Delta x)^2}
+\end{equation}
+
+\begin{equation}
+\begin{split} 
+u_{1,1}^{1} &= s \cdot u_{2,1}^{0} + s \cdot u_{0,1}^{0} + s \cdot u_{1,2}^{0} + s \cdot u_{1,0}^{0} - 4 s \cdot u_{1,1}^{0} + u_{1,1}^{0} \\
+&= s \cdot u_{2,1}^{0} + s \cdot u_{0,1}^{0} + s \cdot u_{1,2}^{0} + s \cdot u_{1,0}^{0}  + (1 - 4 s) \cdot u_{1,1}^{0} \\
+u_{2,1}^{1} &= s \cdot u_{3,1}^{0} + s \cdot u_{1,1}^{0} + s \cdot u_{2,2}^{0} + s \cdot u_{2,0}^{0}  + (1 - 4 s) \cdot u_{2,1}^{0} \\
+u_{1,2}^{1} &= s \cdot u_{2,2}^{0} + s \cdot u_{0,2}^{0} + s \cdot u_{1,3}^{0} + s \cdot u_{1,1}^{0}  + (1 - 4 s) \cdot u_{1,2}^{0} \\
+u_{2,2}^{1} &= s \cdot u_{3,2}^{0} + s \cdot u_{1,2}^{0} + s \cdot u_{2,3}^{0} + s \cdot u_{2,1}^{0}  + (1 - 4 s) \cdot u_{2,2}^{0} \\
+u_{1,1}^{2} &= s \cdot u_{2,1}^{1} + s \cdot u_{0,1}^{1} + s \cdot u_{1,2}^{1} + s \cdot u_{1,0}^{1}  + (1 - 4 s) \cdot u_{1,1}^{1} \\
+u_{2,1}^{2} &= s \cdot u_{3,1}^{1} + s \cdot u_{1,1}^{1} + s \cdot u_{2,2}^{1} + s \cdot u_{2,0}^{1}  + (1 - 4 s) \cdot u_{2,1}^{1} \\
+u_{1,2}^{2} &= s \cdot u_{2,2}^{1} + s \cdot u_{0,2}^{1} + s \cdot u_{1,3}^{1} + s \cdot u_{1,1}^{1}  + (1 - 4 s) \cdot u_{1,2}^{1} \\
+u_{2,2}^{2} &= s \cdot u_{3,2}^{1} + s \cdot u_{1,2}^{1} + s \cdot u_{2,3}^{1} + s \cdot u_{2,1}^{1}  + (1 - 4 s) \cdot u_{2,2}^{1} \\
+u_{1,1}^{3} &= s \cdot u_{2,1}^{2} + s \cdot u_{0,1}^{2} + s \cdot u_{1,2}^{2} + s \cdot u_{1,0}^{2}  + (1 - 4 s) \cdot u_{1,1}^{2} \\
+u_{2,1}^{3} &= s \cdot u_{3,1}^{2} + s \cdot u_{1,1}^{2} + s \cdot u_{2,2}^{2} + s \cdot u_{2,0}^{2}  + (1 - 4 s) \cdot u_{2,1}^{2} \\
+u_{1,2}^{3} &= s \cdot u_{2,2}^{2} + s \cdot u_{0,2}^{2} + s \cdot u_{1,3}^{2} + s \cdot u_{1,1}^{2}  + (1 - 4 s) \cdot u_{1,2}^{2} \\
+u_{2,2}^{3} &= s \cdot u_{3,2}^{2} + s \cdot u_{1,2}^{2} + s \cdot u_{2,3}^{2} + s \cdot u_{2,1}^{2}  + (1 - 4 s) \cdot u_{2,2}^{2} \\
+\vdots \\
+u_{i,j}^{m + 1} &= s \cdot u_{i + 1 ,j}^m + s \cdot u_{i - 1 ,j}^m + s \cdot u_{i,j + 1}^m + s \cdot u_{i,j - 1}^m + (1 - 4 s) \cdot u_{i,j}^m  
+\end{split}
+\end{equation}
+
+Rewrite as \begin{equation}
+\begin{split} 
+u_{i,j}^{m+1} &= s \cdot u_{i-1,j}^m + s \cdot u_{i,j-1}^m + (1-4s) \cdot u_{i,j}^m + s \cdot u_{i+1,j}^m + s \cdot u_{i,j+1}^m 
+\end{split}
+\end{equation}
+
+where the boundary conditions are defined as \(\forall i\) when j=0 and
+j=M and \(\forall j\) when i=0 and i=L.
+
+If we want to use matrix notation
+
+\begin{equation}
+u_{i,j}^{m+1} = 
+\begin{pmatrix}
+u_{i-1,j}^{m+1} \\ u_{i,j-1}^{m+1} \\ u_{i,j}^{m+1} \\ u_{i+1,j}^{m+1} \\ u_{i,j+1}^{m+1} 
+\end{pmatrix}
+\end{equation}
+
+\begin{equation}
+u_{i,j}^m = 
+\begin{pmatrix}
+u_{i-1,j}^{m} \\ u_{i,j-1}^{m} \\ u_{i,j}^{m} \\ u_{i+1,j}^{m} \\ u_{i,j+1}^{m} 
+\end{pmatrix}
+\end{equation}
+
+\begin{equation}
+A_{m,n} = 
+\begin{pmatrix}
+(1-4s) & s & s & 0 & 0 & 0 & 0 & 0 \\
+s & (1-4s) & s & s & 0 & 0 & 0 & 0 \\
+s & s & (1-4s) & s & s & 0 & 0 & 0 \\
+0 & s & s & (1-4s) & s & s & 0 & 0 \\
+0 & 0 & s & s & (1-4s) & s & s & 0 \\
+\vdots & \vdots & \vdots & \vdots & \vdots & \vdots & \vdots & \vdots \\
+0 & 0 & 0 & 0 & 0 & s & s & (1-4s) 
+\end{pmatrix}
+\end{equation}
+
+\begin{equation}
+b_{i,j}^m = 
+\begin{pmatrix}
+u_{0,j}^{m} \\ u_{i,0}^{m} \\ 0 \\ u_{L,j}^{m} \\ u_{i,M}^{m} 
+\end{pmatrix}
+\end{equation}
+
+    \hypertarget{vonneumann-stability-analysis}{%
+\subsection{vonNeumann Stability
+Analysis}\label{vonneumann-stability-analysis}}
+
+    Describe vN stability to ensure amplification \textless= 1. Follows
+general solution of the Diffusion equation\ldots.sin(x)\ldots{}
+
+Q is the amplification or growth factor.
+
+Let \begin{equation}
+\begin{split}
+u^{m}_{j, l} &= Q^{m}e^{i(\alpha x + \beta y)} \\
+u^{m+1}_{j, l} &= Q^{m+1}e^{i(\alpha x + \beta y)} = Q Q^{m}e^{i(\alpha x + \beta y)} \\
+u^{m}_{j+1, l} &= Q^{m}e^{i(\alpha (x + \Delta x) + \beta y)} \\
+u^{m}_{j-1, l} &= Q^{m}e^{i(\alpha (x - \Delta x) + \beta y)} \\
+u^{m}_{j, l+1} &= Q^{m}e^{i(\alpha x + \beta (y + \Delta y))} \\
+u^{m}_{j, l-1} &= Q^{m}e^{i(\alpha x + \beta (y - \Delta y))} 
+\end{split}
+\end{equation}
+
+The descritized equation \begin{equation}
+\begin{split}
+u_{j,l}^{m + 1} & = \frac{(2 \Delta t)}{(\Delta x)^2}(u_{j + 1,l}^m + u_{j - 1 ,l}^m + u_{j,l + 1}^m + u_{j,l - 1}^m - 4 u_{j,l}^m) + u_{j, l}^{m} 
+\end{split}
+\end{equation} becomes \begin{equation}
+\begin{split}
+Q Q^{m}e^{i(\alpha x + \beta y)} = \frac{(2 \Delta t)}{(\Delta x)^2} \cdot \left(Q^{m}e^{i(\alpha (x + \Delta x) + \beta y)} +  Q^{m}e^{i(\alpha (x - \Delta x) + \beta y)} + Q^{m}e^{i(\alpha x + \beta (y + \Delta y))} + 
+Q^{m}e^{i(\alpha x + \beta (y - \Delta y))} - 4 \cdot Q^{m}e^{i(\alpha x + \beta y)}\right) + Q^{m}e^{i(\alpha x + \beta y)} 
+\end{split}
+\end{equation} Let \begin{equation}
+s = \frac{(2 \Delta t)}{(\Delta x)^2}
+\end{equation}
+
+Recall \begin{equation}
+cos(x) = \frac{e^{ix} + e^{-ix}}{2} 
+\end{equation}
+
+Divide both sides by \(Q^{m}e^{i(\alpha x + \beta y)}\) \begin{equation}
+\begin{split}
+Q &= s \cdot (e^{i(\alpha \Delta x)} + e^{i(\alpha (-\Delta x))} + e^{i(\beta \Delta y)} + e^{i(\beta (-\Delta y))} - 4) + 1 \\
+&= s \cdot (e^{i(\alpha \Delta x)} + e^{-i(\alpha \Delta x)} + e^{i(\beta \Delta y)} + e^{-i(\beta \Delta y)} - 4) + 1 \\
+&= s \cdot (2 cos (\alpha \Delta x) + 2 cos (\beta \Delta y) - 4) + 1 \\
+&= 1 + 2 s \cdot (cos (\alpha \Delta x) + cos (\beta \Delta y) - 2) \\
+&= 1 + 2 s \cdot (cos (\alpha \Delta x) + cos (\beta \underbrace{\Delta y}_{\text{=$\Delta$x, earlier assumption}}) - 2) \\
+&= 1 + 2 s \cdot (2 cos (\alpha \Delta x) - 2) \\
+&= 1 + 4 s \cdot (cos (\alpha \Delta x) - 1)
+\end{split}
+\end{equation}
+
+Stability exists \(\vert Q \vert \leq\) 1. The goal is to determine the
+largest value of s such that \(\vert Q \vert \leq\) 1. We need to
+determine when Q is maximized. By inspection, Q is at its largest value
+when \(\alpha \Delta x\) = \(\pi\). \begin{equation}
+\begin{split}
+Q &= 1 + 4 s \cdot (cos (\pi) - 1) \\
+&= 1 + 4 s \cdot (-1 - 1) \\
+&= 1 + 4 s \cdot (-2) \\
+&= 1 - 8 s 
+\end{split}
+\end{equation}
+
+Since \(\vert Q \vert \leq\) 1, the following condition arises:
+\begin{equation}
+-1 \leq 1 - 8 s \leq 1
+\end{equation}
+
+For 1 - 8 s \(\leq\) 1, we have s \(\leq\) 0. For -1 \(\leq\) 1 - 8 s,
+we have s \(\leq \frac{1}{4}\). This means that there is a relationship
+between stability factor, s, and the values that can be chosen for
+\(\Delta x\) and \(\Delta t\). In other words, the number of time
+segments is directly related to the size of the \(\Delta x\):
+\begin{equation}
+\begin{split}
+s \leq \frac{1}{4} = \frac{2 \Delta t}{(\Delta x)^2} \\
+\Delta t = \frac{(\Delta x)^2}{8}
+\end{split}
+\end{equation}
+
+    \hypertarget{numerical-solution-in-cylindrical-coordinates}{%
+\subsection{Numerical Solution in Cylindrical
+Coordinates}\label{numerical-solution-in-cylindrical-coordinates}}
+
+    Recall the PDE for a 2-dimensional cylindrical surface: \begin{equation}
+\begin{split}
+\frac {\partial^2 u}{\partial \rho^2} + \frac{1}{\rho} \frac {\partial u}{\partial \rho} + 
+\frac{1}{\rho^2} \frac {\partial^2 u}{\partial \phi^2} = \frac {\partial u}{\partial t}
+\end{split}
+\end{equation}) Centered-space and forward in time. Combinine equations
+xx and yy, the finite difference method generates the following terms to
+replace the partial derivatives: \begin{equation}
+\begin{split} 
+\frac{df}{dt} &\approx \frac{f(\rho, \phi, t + \Delta t) - f(\rho, \phi, t)}{2 (\Delta t)} \\
+&= \frac{u_{i,j}^{m + 1} - u_{i,j}^{m}}{2 (\Delta t)} \\
+\frac{df}{d\rho} &\approx \frac{f(\rho +\Delta \rho, \phi, t) - f(\rho - \Delta \rho, \phi, t )}{2 (\Delta \rho)} \\
+&= \frac{u_{i + 1,j}^{m} - u_{i -1 ,j}^{m}}{2 (\Delta \rho)} \\
+\frac{d^2f}{d\rho^2} &\approx \frac{f(\rho + \Delta \rho, \phi, t) + f(\rho - \Delta \rho, \phi, t) - 2 f(\rho, \phi, t)}{(\Delta \rho)^2} \\
+&= \frac{u_{i + 1 ,j}^m + u_{i - 1 ,j}^m - 2 u_{i,j}^m}{(\Delta \rho)^2} \\
+\frac{d^2f}{d\phi^2} &\approx \frac{f(\rho, \phi + \Delta, t) + f(\rho, \phi - \Delta \phi, t) - 2 f(\rho, \phi, t)}{(\Delta \phi)^2} \\
+&= \frac{u_{i,j + 1}^m + u_{i,j - 1}^m - 2 u_{i,j}^m}{(\Delta \phi)^2}  
+\end{split} 
+\end{equation}
+
+Since the coordinate \(\rho\) is discretized, it get replaced by
+\(\rho_i\) since we have to us the value of \(\rho\) at each point in
+the mesh. \begin{equation}
+\begin{split}
+\frac {\partial u}{\partial t} &= \frac {\partial^2 u}{\partial \rho^2} + \frac{1}{\rho} \frac {\partial u}{\partial \rho} + 
+\frac{1}{\rho^2} \frac {\partial^2 u}{\partial \phi^2} 
+\end{split}
+\end{equation}
+
+becomes
+
+\begin{equation}
+\begin{split}
+\frac{u_{i,j}^{m + 1} - u_{i,j}^{m}}{2 (\Delta t)} &= \frac{u_{i + 1 ,j}^m + u_{i - 1 ,j}^m - 2 u_{i,j}^m}{(\Delta \rho)^2} + 
+\frac{1}{\rho_i} \frac{u_{i + 1,j}^{m} - u_{i -1 ,j}^{m}}{2 (\Delta \rho)} +
+\frac{1}{(\rho_i)^2} \frac{u_{i,j + 1}^m + u_{i,j - 1}^m - 2 u_{i,j}^m}{(\Delta \phi)^2} \\
+u_{i,j}^{m + 1} - u_{i,j}^{m} &= 2 (\Delta t) \left[\frac{u_{i + 1 ,j}^m + u_{i - 1 ,j}^m - 2 u_{i,j}^m}{(\Delta \rho)^2} + 
+\frac{1}{\rho_i} \frac{u_{i + 1,j}^{m} - u_{i -1 ,j}^{m}}{2 (\Delta \rho)} +
+\frac{1}{(\rho_i)^2} \frac{u_{i,j + 1}^m + u_{i,j - 1}^m - 2 u_{i,j}^m}{(\Delta \phi)^2} \right]  \\
+u_{i,j}^{m + 1} &= 2 (\Delta t) \left[\frac{u_{i + 1 ,j}^m + u_{i - 1 ,j}^m - 2 u_{i,j}^m}{(\Delta \rho)^2} + 
+\frac{1}{\rho_i} \frac{u_{i + 1,j}^{m} - u_{i -1 ,j}^{m}}{2 (\Delta \rho)} +
+\frac{1}{(\rho_i)^2} \frac{u_{i,j + 1}^m + u_{i,j - 1}^m - 2 u_{i,j}^m}{(\Delta \phi)^2} \right] +  u_{i,j}^{m} \\
+&= 2 (\Delta t) \left[\frac{u_{i + 1 ,j}^m + u_{i - 1 ,j}^m - 2 u_{i,j}^m}{(\Delta \rho)^2} + 
+\frac{1}{\Delta \rho \cdot i} \frac{u_{i + 1,j}^{m} - u_{i -1 ,j}^{m}}{2 (\Delta \rho)} +
+\frac{1}{(\Delta \rho \cdot i)^2} \frac{u_{i,j + 1}^m + u_{i,j - 1}^m - 2 u_{i,j}^m}{(\Delta \phi)^2} \right] +  u_{i,j}^{m} \\
+&= \frac{2 (\Delta t)}{(\Delta \rho)^2} \left[\left (u_{i + 1 ,j}^m + u_{i - 1 ,j}^m - 2 u_{i,j}^m \right) + 
+\frac{u_{i + 1,j}^{m} - u_{i -1 ,j}^{m}}{2 \cdot i} +
+\frac{u_{i,j + 1}^m + u_{i,j - 1}^m - 2 u_{i,j}^m}{i^2 \cdot (\Delta \phi)^2} \right] +  u_{i,j}^{m} 
+\end{split}
+\end{equation}
+
+This was solved for \(\rho\) \textgreater{} 0. We need to look at the
+case when \(\rho\) = 0 as a special case, because the PDE terms
+\begin{equation}
+\lim_{\rho^{+} \rightarrow 0} \frac{1}{\rho}\rightarrow \infty 
+\end{equation} For completeness, the previous limit specifies
+\(\rho^{+} \rightarrow 0\) as approaching 0 from the positive side of
+the number line as we do not consider negative length values.
+
+    \hypertarget{special-case-rho-0}{%
+\subsubsection{\texorpdfstring{Special Case \(\rho\) =
+0}{Special Case \textbackslash rho = 0}}\label{special-case-rho-0}}
+
+    So, how do we discretize the PDE in this case. First, we can use use
+L'Hopital's rule to determine if this term converges, and then, to which
+value.
+
+\begin{equation}
+\lim_{\rho^{+} \rightarrow 0} \frac{1}{\rho} \frac {\partial u}{\partial \rho} \rightarrow \infty \\
+L'Hopital's Rule: \\
+\lim_{\rho^{+} \rightarrow 0} \frac{\frac {\partial u}{\partial \rho} \left(\frac {\partial u}{\partial \rho} \right) }{\frac {\partial u}{\partial \rho} \left(\rho\right)} =
+\lim_{\rho^{+} \rightarrow 0} \frac{\frac{\partial^2 u}{\partial \rho^2}}{1} =
+\frac{\partial^2 u}{\partial \rho^2}
+\end{equation}
+
+Now, for \$\rho \$ = 0 (i = 0) the resulting discretized PDE is
+\begin{equation}
+\begin{split}
+s &= 2 \frac{\Delta t}{(\Delta \rho)^2} \\
+u_{i}^{m + 1} &= s \left(u_{i + 1}^m + u_{i - 1 }^m - 2 u_{i}^m \right) +  u_{i}^{m} \\
+u_{0}^{m + 1} &= s \left(u_{1}^m + u_{- 1}^m - 2 u_{0}^m \right) +  u_{0}^{m} \\
+&= s \left(u_{1}^m + \underbrace{u_{- 1}^m}_{\text{=0, the term does not exist}} - 2 u_{0}^m \right) +  u_{0}^{m} \\
+&= s \left(u_{1}^m - 2 u_{0}^m \right) +  u_{0}^{m} \\
+&= s u_{1}^m + (1 - 2s) u_{0}^m 
+\end{split}
+\end{equation}
+
+Next, we must determine when this solution is numerically stable.
+
+    \hypertarget{von-neumann-stability-analysis-for-the-special-case-rho-0}{%
+\subsubsection{\texorpdfstring{Von Neumann Stability Analysis for the
+Special Case \(\rho\) =
+0}{Von Neumann Stability Analysis for the Special Case \textbackslash rho = 0}}\label{von-neumann-stability-analysis-for-the-special-case-rho-0}}
+
+    As discussed in the rectilinear example, the amplification factor, Q,
+must be \(\vert Q \vert \leq\) 1 in order for the numerical solution to
+converge (i.e.~stable). Let,
+
+    \begin{equation}
+\begin{split}
+u^{m}_{0} &= Q^{m}e^{i\alpha \rho} = Q^{m}e^{i\alpha \cdot 0} = Q^{m} \\
+u^{m+1}_{0} &= Q^{m+1}e^{i\alpha \rho} = Q Q^{m}e^{i\alpha \rho} = Q Q^{m}e^{i\alpha \cdot 0} = Q Q^{m} \\
+u^{m}_{1} &= Q^{m}e^{i\alpha (\rho + \Delta \rho)} = Q^{m}e^{i\alpha (0 + \Delta \rho)} = Q^{m}e^{i\alpha \Delta \rho}
+\end{split}
+\end{equation}
+
+Then, \begin{equation}
+\begin{split}
+u_{0}^{m + 1} &= s u_{1}^m + (1 - 2s) u_{0}^m \\
+Q Q^{m} &= s \cdot Q^{m}e^{i\alpha \Delta \rho} + (1-2s) Q^{m} \\
+Q &= s \cdot e^{i\alpha \Delta \rho} + (1-2s) \\
+&= s \cdot \left( cos(\alpha \Delta \rho) + i sin(\alpha \Delta \rho) \right) + (1-2s) \\
+&= s \cdot cos(\alpha \Delta \rho) + i \cdot s \cdot sin(\alpha \Delta \rho)  + (1-2s) \\
+&= \left( s \cdot cos(\alpha \Delta \rho) + (1-2s) \right)  + i \cdot s \cdot sin(\alpha \Delta \rho)  
+\end{split}
+\end{equation}
+
+Since \(\vert Q \vert \leq\) 1, the following condition arises:
+\begin{equation}
+\begin{split}
+Q = (s \cdot cos(\alpha \Delta \rho) + (1-2s) ) + i \cdot s \cdot sin(\alpha \Delta \rho)  \\
+Q^{*} = (s \cdot cos(\alpha \Delta \rho) + (1-2s) ) - i \cdot s \cdot sin(\alpha \Delta \rho)  
+\end{split}
+\end{equation}
+
+Therefore, \begin{equation}
+\begin{split}
+&-1 \leq \sqrt{Q \cdot Q^{*}} \leq 1 \\
+&-1 \leq \sqrt{\left[\left( s \cdot cos(\alpha \Delta \rho) + (1-2s) \right)  + i \cdot s \cdot sin(\alpha \Delta \rho)\right] \cdot 
+\left[\left( s \cdot cos(\alpha \Delta \rho) + (1-2s) \right)  - i \cdot s \cdot sin(\alpha \Delta \rho)\right]} \leq 1 \\
+&-1 \leq \sqrt{\left( s \cdot cos(\alpha \Delta \rho) + (1-2s) \right)^2  + s^2 \cdot sin^2(\alpha \Delta \rho)} \leq 1 \\ 
+&-1 \leq \left( s \cdot cos(\alpha \Delta \rho) + (1-2s) \right)^2  + s^2 \cdot sin^2(\alpha \Delta \rho) \leq 1 \\
+&-1 \leq s^2 \cdot cos^2(\alpha \Delta \rho) + (1-2s)^2 + 2(1-2s)(s \cdot cos(\alpha \Delta \rho)) + s^2 \cdot sin^2(\alpha \Delta \rho) \leq 1 \\
+&-1 \leq \underbrace{s^2 \cdot cos^2(\alpha \Delta \rho) + s^2 \cdot sin^2(\alpha \Delta \rho)}_{\text{=s$^2$, since $ sin^2 x + cos^2x $ = 1}}  + (1-2s)^2 + 2s(1-2s)(cos(\alpha \Delta \rho)) \leq 1 \\
+&-1 \leq s^2 + \underbrace{(1-2s)^2}_{=1-4s+4s^2} + 2s(1-2s)(cos(\alpha \Delta \rho)) \leq 1 \\
+&-1 \leq 1-4s+5s^2 + 2s(1-2s)(cos(\alpha \Delta \rho)) \leq 1 
+\end{split}
+\end{equation}
+
+Since \(1-4s+5s^2 + 2s(1-2s)(cos(\alpha \Delta \rho))\), reaches its max
+when \(cos(\alpha \Delta \rho)\) = -1 or when
+\(\alpha \Delta \rho = \pi\) \begin{equation}
+\begin{split}
+&-1 \leq 1 - 4s + 5s^2 + 2s(1-2s)(cos(\alpha \Delta \rho)) \leq 1 \\
+&-1 \leq 1 - 4s + 5s^2 + 2s(1-2s)\underbrace{(cos(\alpha \Delta \rho))}_{=-1} \leq 1 \\ 
+&-1 \leq 1 - 4s + 5s^2 + 2s(1-2s)(-1) \leq 1 \\ 
+&-1 \leq 1 - 4s + 5s^2 - 2s(1-2s) \leq 1 \\ 
+&-1 \leq 1 - 4s + 5s^2 - 2s + 4s^2 \leq 1 \\ 
+&-1 \leq 9s^2 - 6s + 1 \leq 1 
+\end{split}
+\end{equation}
+
+Taking the right inequality first , \begin{equation}
+\begin{split}
+9s^2 - 6s + 1 \leq 1  \\
+9s^2 - 6s \leq 0  \\
+s \cdot (9s - 6) \leq 0  \\
+s \leq 0 \\ or, \\
+s \leq \frac{2}{3}
+\end{split}
+\end{equation}
+
+Now, the left inequality , \begin{equation}
+\begin{split}
+-1 \leq 9s^2 - 6s + 1  \\
+0 \leq 9s^2 - 6s + 2 
+\end{split}
+\end{equation}
+
+The roots of \(9s^2 - 6s + 2\) are complex, and not applicable for this
+situation because there are no time steps with complex values - only
+real numbers. Therefore, the largest value of s that will satisfy the
+vonNewman stability condition is s \(\leq \frac{2}{3}\) for
+\(\rho = 0\). We have already accepted a value of s \(\leq \frac{1}{2}\)
+for \(\rho \gt\) 0. So, it is reasonable to use s = \(\frac{1}{2}\) for
+\(\rho \geq 0\).
+
+    \hypertarget{complete-numerical-solution}{%
+\subsubsection{Complete Numerical
+Solution}\label{complete-numerical-solution}}
+
+    To summarize, the numerical solution to the heat Equation is \(i \gt 0\)
+\begin{equation}
+\begin{split}
+u_{i,j}^{m + 1} &= 2 (\Delta t) \left[\frac{u_{i + 1 ,j}^m + u_{i - 1 ,j}^m - 2 u_{i,j}^m}{(\Delta \rho)^2} + 
+\frac{1}{\rho_i} \frac{u_{i + 1,j}^{m} - u_{i -1 ,j}^{m}}{2 (\Delta \rho)} +
+\frac{1}{(\rho_i)^2} \frac{u_{i,j + 1}^m + u_{i,j - 1}^m - 2 u_{i,j}^m}{(\Delta \phi)^2} \right] +  u_{i,j}^{m} 
+\end{split}
+\end{equation} where \begin{equation}
+\begin{split}
+s &= 2 \frac{\Delta t}{(\Delta \rho)^2}
+\end{split}
+\end{equation} and \(i = 0\) \begin{equation}
+\begin{split}
+u_{0}^{m + 1} &= s u_{1}^m + (1 - 2s) u_{0}^m 
+\end{split}
+\end{equation}
+
+This means we need to know the value of \(u_{1}^0\) and \(u_{0}^0\) as
+part of the initial conditions.
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{ }{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+
+\end{Verbatim}
+\end{tcolorbox}
+
+    \hypertarget{examples-in-two-dimensions}{%
+\section{Examples In Two-Dimensions}\label{examples-in-two-dimensions}}
+
+    \hypertarget{example-in-a-square-plane}{%
+\subsection{Example In A Square Plane}\label{example-in-a-square-plane}}
+
+    This example illustrates the temperature distribution in a square plane
+over time. The Initial condition, that is time = 0, there is a small 10
+x 10 area near the center of the square that is 50,000\(^{\circ}\)C. The
+boundary conditions are such that along the y-axis at x=0 and x=L, the
+temperature is 10,000\(^{\circ}\)C. The number of time slices is 100.
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{1}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{c+c1}{\PYZsh{} Filename:  Plot2DHeat.py}
+\PY{c+c1}{\PYZsh{} Purpose:   }
+\PY{c+c1}{\PYZsh{}}
+\PY{o}{\PYZpc{}}\PY{k}{matplotlib} notebook
+
+\PY{c+c1}{\PYZsh{} imports}
+\PY{k+kn}{import}      \PY{n+nn}{sys}
+\PY{k+kn}{import}      \PY{n+nn}{math} \PY{k}{as} \PY{n+nn}{mth}
+\PY{k+kn}{import}      \PY{n+nn}{matplotlib}\PY{n+nn}{.}\PY{n+nn}{pyplot} \PY{k}{as} \PY{n+nn}{plt}
+\PY{k+kn}{import}      \PY{n+nn}{matplotlib}\PY{n+nn}{.}\PY{n+nn}{animation} \PY{k}{as} \PY{n+nn}{animation}
+\PY{k+kn}{from}        \PY{n+nn}{matplotlib} \PY{k+kn}{import} \PY{n}{cm}
+\PY{k+kn}{from}        \PY{n+nn}{matplotlib}\PY{n+nn}{.}\PY{n+nn}{ticker} \PY{k+kn}{import} \PY{n}{LinearLocator}\PY{p}{,} \PY{n}{FormatStrFormatter}
+\PY{k+kn}{import}      \PY{n+nn}{matplotlib}
+\PY{k+kn}{import}      \PY{n+nn}{plotly} \PY{k}{as} \PY{n+nn}{pl}
+\PY{k+kn}{import}      \PY{n+nn}{numpy} \PY{k}{as} \PY{n+nn}{np}
+\PY{k+kn}{from}        \PY{n+nn}{mpl\PYZus{}toolkits}\PY{n+nn}{.}\PY{n+nn}{mplot3d} \PY{k+kn}{import} \PY{n}{Axes3D}
+\PY{k+kn}{from}        \PY{n+nn}{IPython}\PY{n+nn}{.}\PY{n+nn}{display} \PY{k+kn}{import} \PY{n}{HTML}
+
+\PY{k}{class} \PY{n+nc}{HeatOnRectangle}\PY{p}{(}\PY{p}{)}\PY{p}{:}
+    \PY{k}{def} \PY{n+nf+fm}{\PYZus{}\PYZus{}init\PYZus{}\PYZus{}}\PY{p}{(}\PY{n+nb+bp}{self}\PY{p}{,} \PY{n}{xmax}\PY{o}{=} \PY{l+m+mi}{100}\PY{p}{,} \PY{n}{ymax}\PY{o}{=} \PY{l+m+mi}{100}\PY{p}{,} \PY{n}{tmax}\PY{o}{=}\PY{l+m+mi}{10}\PY{p}{,} \PY{n}{dx} \PY{o}{=} \PY{l+m+mf}{0.1}\PY{p}{,} \PY{n}{dy}\PY{o}{=} \PY{l+m+mf}{0.1}\PY{p}{,} \PY{n}{dt}\PY{o}{=}\PY{l+m+mf}{0.01}\PY{p}{,} \PY{n}{frames}\PY{o}{=}\PY{l+m+mi}{50}\PY{p}{,} \PY{n}{bDebug} \PY{o}{=} \PY{k+kc}{False}\PY{p}{)}\PY{p}{:}
+        \PY{c+c1}{\PYZsh{}Global debug}
+        \PY{n+nb+bp}{self}\PY{o}{.}\PY{n}{bDebug} \PY{o}{=} \PY{n}{bDebug}
+        
+        \PY{c+c1}{\PYZsh{}Init physical grid for calculation}
+        \PY{n+nb+bp}{self}\PY{o}{.}\PY{n}{dt} \PY{o}{=} \PY{n}{dt}
+        \PY{n+nb+bp}{self}\PY{o}{.}\PY{n}{dx} \PY{o}{=} \PY{n}{dx}
+        \PY{n+nb+bp}{self}\PY{o}{.}\PY{n}{dy} \PY{o}{=} \PY{n}{dy}
+        \PY{n+nb+bp}{self}\PY{o}{.}\PY{n}{Tmax} \PY{o}{=} \PY{n}{tmax}
+        \PY{n+nb+bp}{self}\PY{o}{.}\PY{n}{Xmax} \PY{o}{=} \PY{n}{xmax}
+        \PY{n+nb+bp}{self}\PY{o}{.}\PY{n}{Ymax} \PY{o}{=} \PY{n}{ymax}
+        \PY{n+nb+bp}{self}\PY{o}{.}\PY{n}{frames} \PY{o}{=} \PY{n}{frames}
+        
+        \PY{n+nb+bp}{self}\PY{o}{.}\PY{n}{t} \PY{o}{=} \PY{n}{np}\PY{o}{.}\PY{n}{linspace}\PY{p}{(}\PY{l+m+mi}{0}\PY{p}{,} \PY{n}{tmax}\PY{p}{,} \PY{l+m+mi}{1}\PY{p}{)}
+        \PY{n+nb+bp}{self}\PY{o}{.}\PY{n}{x} \PY{o}{=} \PY{n}{np}\PY{o}{.}\PY{n}{linspace}\PY{p}{(}\PY{l+m+mi}{0}\PY{p}{,} \PY{n}{xmax}\PY{p}{,} \PY{n}{xmax}\PY{o}{+}\PY{l+m+mi}{1}\PY{p}{)}
+        \PY{n+nb+bp}{self}\PY{o}{.}\PY{n}{y} \PY{o}{=} \PY{n}{np}\PY{o}{.}\PY{n}{linspace}\PY{p}{(}\PY{l+m+mi}{0}\PY{p}{,} \PY{n}{ymax}\PY{p}{,} \PY{n}{ymax}\PY{o}{+}\PY{l+m+mi}{1}\PY{p}{)}   
+        \PY{n+nb+bp}{self}\PY{o}{.}\PY{n}{u} \PY{o}{=} \PY{n}{np}\PY{o}{.}\PY{n}{zeros}\PY{p}{(}\PY{p}{[}\PY{n+nb}{len}\PY{p}{(}\PY{n+nb+bp}{self}\PY{o}{.}\PY{n}{x}\PY{p}{)}\PY{p}{,} \PY{n+nb}{len}\PY{p}{(}\PY{n+nb+bp}{self}\PY{o}{.}\PY{n}{y}\PY{p}{)}\PY{p}{]}\PY{p}{,} \PY{n+nb}{float}\PY{p}{)}
+        \PY{n+nb+bp}{self}\PY{o}{.}\PY{n}{uAnimation} \PY{o}{=} \PY{n}{np}\PY{o}{.}\PY{n}{zeros}\PY{p}{(}\PY{p}{[}\PY{n+nb}{len}\PY{p}{(}\PY{n+nb+bp}{self}\PY{o}{.}\PY{n}{x}\PY{p}{)}\PY{p}{,} \PY{n+nb}{len}\PY{p}{(}\PY{n+nb+bp}{self}\PY{o}{.}\PY{n}{y}\PY{p}{)}\PY{p}{,} \PY{n+nb+bp}{self}\PY{o}{.}\PY{n}{frames} \PY{o}{+} \PY{l+m+mi}{1}\PY{p}{]}\PY{p}{,} \PY{n+nb}{float}\PY{p}{)}
+        
+        \PY{c+c1}{\PYZsh{}init graphical output}
+        \PY{n+nb+bp}{self}\PY{o}{.}\PY{n}{fig} \PY{o}{=} \PY{n}{plt}\PY{o}{.}\PY{n}{figure}\PY{p}{(}\PY{p}{)}                                 \PY{c+c1}{\PYZsh{} Create figure object}
+        \PY{n+nb+bp}{self}\PY{o}{.}\PY{n}{fig}\PY{o}{.}\PY{n}{set\PYZus{}size\PYZus{}inches}\PY{p}{(}\PY{l+m+mi}{10}\PY{p}{,} \PY{l+m+mi}{12}\PY{p}{)}
+        
+        \PY{n+nb+bp}{self}\PY{o}{.}\PY{n}{ax} \PY{o}{=} \PY{n}{Axes3D}\PY{p}{(}\PY{n+nb+bp}{self}\PY{o}{.}\PY{n}{fig}\PY{p}{,} \PY{n}{auto\PYZus{}add\PYZus{}to\PYZus{}figure}\PY{o}{=}\PY{k+kc}{False}\PY{p}{)}    \PY{c+c1}{\PYZsh{} Create axes object}
+        \PY{n+nb+bp}{self}\PY{o}{.}\PY{n}{fig}\PY{o}{.}\PY{n}{add\PYZus{}axes}\PY{p}{(}\PY{n+nb+bp}{self}\PY{o}{.}\PY{n}{ax}\PY{p}{)}
+        \PY{n+nb+bp}{self}\PY{o}{.}\PY{n}{surf}\PY{p}{,} \PY{o}{=} \PY{n}{plt}\PY{o}{.}\PY{n}{plot}\PY{p}{(}\PY{p}{[}\PY{p}{]}\PY{p}{,} \PY{p}{[}\PY{p}{]}\PY{p}{,} \PY{p}{[}\PY{p}{]}\PY{p}{)}                       \PY{c+c1}{\PYZsh{} Create empty 3D line object}
+        \PY{n+nb+bp}{self}\PY{o}{.}\PY{n}{ax}\PY{o}{.}\PY{n}{set\PYZus{}xlabel}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{x (cm)}\PY{l+s+s2}{\PYZdq{}}\PY{p}{)}
+        \PY{n+nb+bp}{self}\PY{o}{.}\PY{n}{ax}\PY{o}{.}\PY{n}{set\PYZus{}ylabel}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{y (cm)}\PY{l+s+s2}{\PYZdq{}}\PY{p}{)}
+        \PY{n+nb+bp}{self}\PY{o}{.}\PY{n}{ax}\PY{o}{.}\PY{n}{set\PYZus{}zlabel}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Temp (C) u(x,y,t)}\PY{l+s+s2}{\PYZdq{}}\PY{p}{)}      
+        \PY{n+nb+bp}{self}\PY{o}{.}\PY{n}{X\PYZus{}ax}\PY{p}{,} \PY{n+nb+bp}{self}\PY{o}{.}\PY{n}{Y\PYZus{}ax} \PY{o}{=} \PY{n}{np}\PY{o}{.}\PY{n}{meshgrid}\PY{p}{(}\PY{n+nb+bp}{self}\PY{o}{.}\PY{n}{x}\PY{p}{,}\PY{n+nb+bp}{self}\PY{o}{.}\PY{n}{y}\PY{p}{)}
+        \PY{c+c1}{\PYZsh{}self.ax.text(5,10,\PYZsq{}Title\PYZsq{})}
+        
+    \PY{c+c1}{\PYZsh{} end of \PYZus{}\PYZus{}init\PYZus{}\PYZus{}}
+    
+    \PY{k}{def} \PY{n+nf+fm}{\PYZus{}\PYZus{}str\PYZus{}\PYZus{}}\PY{p}{(}\PY{n+nb+bp}{self}\PY{p}{)}\PY{p}{:}
+        
+        \PY{n+nb}{print} \PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{u = }\PY{l+s+si}{\PYZpc{}d}\PY{l+s+s2}{\PYZdq{}}\PY{o}{.}\PY{n}{format}\PY{p}{(}\PY{n}{u}\PY{p}{)}\PY{p}{)}    
+    \PY{c+c1}{\PYZsh{} end of \PYZus{}\PYZus{}str\PYZus{}\PYZus{}}
+
+    \PY{k}{def} \PY{n+nf}{initSurface}\PY{p}{(}\PY{n+nb+bp}{self}\PY{p}{)}\PY{p}{:}
+        \PY{l+s+sd}{\PYZsq{}\PYZsq{}\PYZsq{}}
+\PY{l+s+sd}{            x and y are lists (vectors) that define the length and width of the rectangle}
+\PY{l+s+sd}{            }
+\PY{l+s+sd}{            return an array initialized with zero\PYZsq{}s}
+\PY{l+s+sd}{        \PYZsq{}\PYZsq{}\PYZsq{}}
+        \PY{k}{if} \PY{p}{(}\PY{n+nb+bp}{self}\PY{o}{.}\PY{n}{bDebug} \PY{o}{==} \PY{k+kc}{True}\PY{p}{)}\PY{p}{:}
+            \PY{n+nb}{print}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{In initSurface}\PY{l+s+s2}{\PYZdq{}}\PY{p}{)}
+            
+        \PY{n+nb+bp}{self}\PY{o}{.}\PY{n}{u} \PY{o}{=} \PY{n}{np}\PY{o}{.}\PY{n}{zeros}\PY{p}{(}\PY{p}{[}\PY{n+nb}{len}\PY{p}{(}\PY{n+nb+bp}{self}\PY{o}{.}\PY{n}{x}\PY{p}{)}\PY{p}{,} \PY{n+nb}{len}\PY{p}{(}\PY{n+nb+bp}{self}\PY{o}{.}\PY{n}{y}\PY{p}{)}\PY{p}{]}\PY{p}{,} \PY{n+nb}{float}\PY{p}{)}
+
+        \PY{k}{return} 
+
+    \PY{k}{def} \PY{n+nf}{applyInitialConditionsAnim}\PY{p}{(}\PY{n+nb+bp}{self}\PY{p}{)}\PY{p}{:}
+    
+        \PY{k}{if} \PY{p}{(}\PY{n+nb+bp}{self}\PY{o}{.}\PY{n}{bDebug} \PY{o}{==} \PY{k+kc}{True}\PY{p}{)}\PY{p}{:}
+            \PY{n+nb}{print}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{applyInitialConditionsAnim}\PY{l+s+s2}{\PYZdq{}}\PY{p}{)}
+        
+        \PY{c+c1}{\PYZsh{}find some grid element near the center}
+        \PY{n}{a} \PY{o}{=} \PY{n}{np}\PY{o}{.}\PY{n}{int32}\PY{p}{(}\PY{n}{np}\PY{o}{.}\PY{n}{floor}\PY{p}{(}\PY{n+nb}{len}\PY{p}{(}\PY{n+nb+bp}{self}\PY{o}{.}\PY{n}{x}\PY{p}{)}\PY{o}{/}\PY{l+m+mi}{2}\PY{p}{)}\PY{p}{)}
+        \PY{n}{b} \PY{o}{=} \PY{n}{np}\PY{o}{.}\PY{n}{int32}\PY{p}{(}\PY{n}{np}\PY{o}{.}\PY{n}{floor}\PY{p}{(}\PY{n+nb}{len}\PY{p}{(}\PY{n+nb+bp}{self}\PY{o}{.}\PY{n}{y}\PY{p}{)}\PY{o}{/}\PY{l+m+mi}{2}\PY{p}{)}\PY{p}{)}
+                
+        \PY{n+nb+bp}{self}\PY{o}{.}\PY{n}{uAnimation}\PY{p}{[}\PY{n}{a}\PY{o}{\PYZhy{}}\PY{l+m+mi}{10}\PY{p}{:}\PY{n}{a}\PY{o}{+}\PY{l+m+mi}{10}\PY{p}{,} \PY{n}{b}\PY{o}{\PYZhy{}}\PY{l+m+mi}{5}\PY{p}{:}\PY{n}{b}\PY{o}{+}\PY{l+m+mi}{20}\PY{p}{,} \PY{l+m+mi}{0}\PY{p}{]} \PY{o}{=} \PY{l+m+mf}{50000.0}
+
+        \PY{k}{if} \PY{p}{(}\PY{n+nb+bp}{self}\PY{o}{.}\PY{n}{bDebug} \PY{o}{==} \PY{k+kc}{True}\PY{p}{)}\PY{p}{:}
+            \PY{n+nb}{print} \PY{p}{(}\PY{n+nb+bp}{self}\PY{o}{.}\PY{n}{uAnimation}\PY{p}{[}\PY{n}{a}\PY{p}{,} \PY{n}{b}\PY{p}{,} \PY{l+m+mi}{0}\PY{p}{]}\PY{p}{)}
+            \PY{n+nb}{print} \PY{p}{(}\PY{n+nb+bp}{self}\PY{o}{.}\PY{n}{uAnimation}\PY{p}{)}
+        
+        \PY{k}{return} 
+
+    \PY{k}{def} \PY{n+nf}{applyBoundaryConditionsAnim}\PY{p}{(}\PY{n+nb+bp}{self}\PY{p}{,} \PY{n}{t}\PY{p}{)}\PY{p}{:}
+        \PY{c+c1}{\PYZsh{}along the x\PYZhy{}axis}
+        \PY{n+nb+bp}{self}\PY{o}{.}\PY{n}{uAnimation}\PY{p}{[}\PY{p}{:}\PY{p}{,} \PY{l+m+mi}{0}\PY{p}{,} \PY{n}{t}\PY{p}{]} \PY{o}{=} \PY{l+m+mf}{0.0}
+        
+        \PY{c+c1}{\PYZsh{}along the x\PYZhy{}axis on the upper\PYZhy{}side of the rectangle}
+        \PY{n+nb+bp}{self}\PY{o}{.}\PY{n}{uAnimation}\PY{p}{[}\PY{p}{:}\PY{p}{,} \PY{n+nb}{len}\PY{p}{(}\PY{n+nb+bp}{self}\PY{o}{.}\PY{n}{y}\PY{p}{)}\PY{o}{\PYZhy{}}\PY{l+m+mi}{1}\PY{p}{,} \PY{n}{t}\PY{p}{]} \PY{o}{=} \PY{l+m+mf}{0.0}
+        
+        \PY{c+c1}{\PYZsh{}along the y\PYZhy{}axis}
+        \PY{n+nb+bp}{self}\PY{o}{.}\PY{n}{uAnimation}\PY{p}{[}\PY{l+m+mi}{0}\PY{p}{,}\PY{p}{:}\PY{p}{,}\PY{n}{t}\PY{p}{]} \PY{o}{=} \PY{l+m+mf}{10000.0}
+        
+        \PY{c+c1}{\PYZsh{}along the y\PYZhy{}axis on the right\PYZhy{}side of the rectangle}
+        \PY{n+nb+bp}{self}\PY{o}{.}\PY{n}{uAnimation}\PY{p}{[}\PY{n+nb}{len}\PY{p}{(}\PY{n+nb+bp}{self}\PY{o}{.}\PY{n}{x}\PY{p}{)}\PY{o}{\PYZhy{}}\PY{l+m+mi}{1}\PY{p}{,} \PY{p}{:}\PY{p}{,} \PY{n}{t}\PY{p}{]} \PY{o}{=} \PY{l+m+mf}{10000.0}
+
+        \PY{k}{if} \PY{p}{(}\PY{n+nb+bp}{self}\PY{o}{.}\PY{n}{bDebug} \PY{o}{==} \PY{k+kc}{True}\PY{p}{)}\PY{p}{:}
+            \PY{n+nb}{print} \PY{p}{(}\PY{n+nb+bp}{self}\PY{o}{.}\PY{n}{uAnimation}\PY{p}{)}
+        
+        \PY{k}{return}
+        
+    \PY{k}{def} \PY{n+nf}{calcTempNextTimeSegmentAnim}\PY{p}{(}\PY{n+nb+bp}{self}\PY{p}{,} \PY{n}{t}\PY{p}{)}\PY{p}{:}
+        \PY{k}{for} \PY{n}{j} \PY{o+ow}{in} \PY{n+nb}{range}\PY{p}{(}\PY{l+m+mi}{1}\PY{p}{,} \PY{n+nb}{len}\PY{p}{(}\PY{n+nb+bp}{self}\PY{o}{.}\PY{n}{x}\PY{p}{)}\PY{o}{\PYZhy{}}\PY{l+m+mi}{1}\PY{p}{)}\PY{p}{:}
+            \PY{k}{if} \PY{p}{(}\PY{n+nb+bp}{self}\PY{o}{.}\PY{n}{bDebug} \PY{o}{==} \PY{k+kc}{True}\PY{p}{)}\PY{p}{:}
+                \PY{n+nb}{print} \PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{j = }\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{n}{j}\PY{p}{)}
+            \PY{k}{for} \PY{n}{l} \PY{o+ow}{in}  \PY{n+nb}{range}\PY{p}{(}\PY{l+m+mi}{1}\PY{p}{,} \PY{n+nb}{len}\PY{p}{(}\PY{n+nb+bp}{self}\PY{o}{.}\PY{n}{y}\PY{p}{)}\PY{o}{\PYZhy{}}\PY{l+m+mi}{1}\PY{p}{)}\PY{p}{:}
+                \PY{k}{if} \PY{p}{(}\PY{n+nb+bp}{self}\PY{o}{.}\PY{n}{bDebug} \PY{o}{==} \PY{k+kc}{True}\PY{p}{)}\PY{p}{:}
+                    \PY{n+nb}{print} \PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{l = }\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{n}{l}\PY{p}{)}
+                \PY{n+nb+bp}{self}\PY{o}{.}\PY{n}{uAnimation}\PY{p}{[}\PY{n}{j}\PY{p}{,}\PY{n}{l}\PY{p}{,}\PY{n}{t}\PY{p}{]} \PY{o}{=} \PY{p}{(}\PY{l+m+mf}{1.0} \PY{o}{/} \PY{l+m+mf}{4.0}\PY{p}{)} \PY{o}{*} \PY{p}{(}\PY{n+nb+bp}{self}\PY{o}{.}\PY{n}{uAnimation}\PY{p}{[}\PY{n}{j}\PY{o}{+}\PY{l+m+mi}{1}\PY{p}{,}\PY{n}{l}\PY{p}{,}\PY{n}{t}\PY{o}{\PYZhy{}}\PY{l+m+mi}{1}\PY{p}{]} \PY{o}{+} 
+                                            \PY{n+nb+bp}{self}\PY{o}{.}\PY{n}{uAnimation}\PY{p}{[}\PY{n}{j}\PY{o}{\PYZhy{}}\PY{l+m+mi}{1}\PY{p}{,}\PY{n}{l}\PY{p}{,}\PY{n}{t}\PY{o}{\PYZhy{}}\PY{l+m+mi}{1}\PY{p}{]} \PY{o}{+} 
+                                            \PY{n+nb+bp}{self}\PY{o}{.}\PY{n}{uAnimation}\PY{p}{[}\PY{n}{j}\PY{p}{,}\PY{n}{l}\PY{o}{+}\PY{l+m+mi}{1}\PY{p}{,}\PY{n}{t}\PY{o}{\PYZhy{}}\PY{l+m+mi}{1}\PY{p}{]} \PY{o}{+} 
+                                            \PY{n+nb+bp}{self}\PY{o}{.}\PY{n}{uAnimation}\PY{p}{[}\PY{n}{j}\PY{p}{,}\PY{n}{l}\PY{o}{\PYZhy{}}\PY{l+m+mi}{1}\PY{p}{,}\PY{n}{t}\PY{o}{\PYZhy{}}\PY{l+m+mi}{1}\PY{p}{]}\PY{p}{)} 
+
+            \PY{k}{if} \PY{p}{(}\PY{n+nb+bp}{self}\PY{o}{.}\PY{n}{bDebug} \PY{o}{==} \PY{k+kc}{True}\PY{p}{)}\PY{p}{:}
+                \PY{n+nb}{print} \PY{p}{(}\PY{n+nb+bp}{self}\PY{o}{.}\PY{n}{uAnimation}\PY{p}{)}
+
+        \PY{k}{return}
+
+    \PY{k}{def} \PY{n+nf}{calcDataAnimation}\PY{p}{(}\PY{n+nb+bp}{self}\PY{p}{,} \PY{n}{tMax}\PY{p}{)}\PY{p}{:}
+
+        \PY{c+c1}{\PYZsh{}Generate the data throughout the time interval}
+        \PY{k}{for} \PY{n}{t} \PY{o+ow}{in} \PY{n+nb}{range}\PY{p}{(}\PY{l+m+mi}{1}\PY{p}{,} \PY{n}{tMax}\PY{p}{)}\PY{p}{:}        
+            \PY{n+nb+bp}{self}\PY{o}{.}\PY{n}{applyBoundaryConditionsAnim}\PY{p}{(}\PY{n}{t}\PY{p}{)}
+            \PY{n+nb+bp}{self}\PY{o}{.}\PY{n}{calcTempNextTimeSegmentAnim}\PY{p}{(}\PY{n}{t}\PY{p}{)}
+        
+        \PY{k}{return} 
+    
+    \PY{k}{def} \PY{n+nf}{animatePlot}\PY{p}{(}\PY{n+nb+bp}{self}\PY{p}{,} \PY{n}{nFrame}\PY{p}{,} \PY{n}{plot}\PY{p}{)}\PY{p}{:}
+
+        
+        \PY{n+nb+bp}{self}\PY{o}{.}\PY{n}{applyBoundaryConditionsAnim}\PY{p}{(}\PY{n}{nFrame}\PY{p}{)}
+        \PY{n+nb+bp}{self}\PY{o}{.}\PY{n}{calcTempNextTimeSegmentAnim}\PY{p}{(}\PY{n}{nFrame}\PY{p}{)}
+        
+        \PY{n+nb+bp}{self}\PY{o}{.}\PY{n}{ax}\PY{o}{.}\PY{n}{clear}\PY{p}{(}\PY{p}{)}
+        \PY{n}{plot} \PY{o}{=} \PY{n+nb+bp}{self}\PY{o}{.}\PY{n}{ax}\PY{o}{.}\PY{n}{plot\PYZus{}surface}\PY{p}{(}\PY{n}{X}\PY{p}{,} \PY{n}{Y}\PY{p}{,} \PY{n+nb+bp}{self}\PY{o}{.}\PY{n}{uAnimation}\PY{p}{[}\PY{p}{:}\PY{p}{,}\PY{p}{:}\PY{p}{,}\PY{n}{nFrame}\PY{p}{]}\PY{p}{,} \PY{n}{cmap}\PY{o}{=}\PY{n}{cm}\PY{o}{.}\PY{n}{coolwarm}\PY{p}{,} \PY{n}{linewidth}\PY{o}{=}\PY{l+m+mi}{0}\PY{p}{,} \PY{n}{antialiased}\PY{o}{=}\PY{k+kc}{False}\PY{p}{)}
+        \PY{n}{plt}\PY{o}{.}\PY{n}{title}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Heat distribution on a plane}\PY{l+s+s2}{\PYZdq{}}\PY{p}{)}
+        
+        \PY{k}{return} \PY{n}{plot}\PY{p}{,}
+    
+    \PY{k}{def} \PY{n+nf}{calcDataForAnimation}\PY{p}{(}\PY{n+nb+bp}{self}\PY{p}{,} \PY{n}{nFrame}\PY{p}{,} \PY{n}{X}\PY{p}{,} \PY{n}{Y}\PY{p}{,} \PY{n}{plot}\PY{p}{)}\PY{p}{:}
+    
+        \PY{n}{plot}\PY{p}{[}\PY{l+m+mi}{0}\PY{p}{]}\PY{o}{.}\PY{n}{remove}\PY{p}{(}\PY{p}{)}
+
+        \PY{n}{plot}\PY{p}{[}\PY{l+m+mi}{0}\PY{p}{]} \PY{o}{=} \PY{n+nb+bp}{self}\PY{o}{.}\PY{n}{ax}\PY{o}{.}\PY{n}{plot\PYZus{}surface}\PY{p}{(}\PY{n}{X}\PY{p}{,} \PY{n}{Y}\PY{p}{,} \PY{n+nb+bp}{self}\PY{o}{.}\PY{n}{uAnimation}\PY{p}{[}\PY{p}{:}\PY{p}{,}\PY{p}{:}\PY{p}{,}\PY{n}{nFrame}\PY{p}{]}\PY{p}{,} \PY{n}{cmap}\PY{o}{=}\PY{n}{cm}\PY{o}{.}\PY{n}{coolwarm}\PY{p}{,} \PY{n}{linewidth}\PY{o}{=}\PY{l+m+mi}{0}\PY{p}{,} \PY{n}{antialiased}\PY{o}{=}\PY{k+kc}{False}\PY{p}{)}
+
+        \PY{c+c1}{\PYZsh{}self.title.set\PYZus{}text(\PYZdq{}Heat distribution on the plane for time segment \PYZob{}\PYZcb{}\PYZdq{}.format(nFrame))}
+        
+        \PY{k}{return} 
+
+    \PY{k}{def} \PY{n+nf}{animateSurfacePlot}\PY{p}{(}\PY{n+nb+bp}{self}\PY{p}{,} \PY{n}{T}\PY{p}{,} \PY{n}{X}\PY{p}{,} \PY{n}{Y}\PY{p}{,} \PY{n}{plot}\PY{p}{)}\PY{p}{:}
+        \PY{c+c1}{\PYZsh{} call the animator.  blit=True means only re\PYZhy{}draw the parts that have changed.}
+        \PY{n}{anim} \PY{o}{=} \PY{n}{animation}\PY{o}{.}\PY{n}{FuncAnimation}\PY{p}{(}\PY{n+nb+bp}{self}\PY{o}{.}\PY{n}{fig}\PY{p}{,} \PY{n+nb+bp}{self}\PY{o}{.}\PY{n}{calcDataForAnimation}\PY{p}{,} \PY{n}{T}\PY{p}{,} \PY{n}{fargs}\PY{o}{=}\PY{p}{(}\PY{n}{X}\PY{p}{,} \PY{n}{Y}\PY{p}{,} \PY{n}{plot}\PY{p}{)}\PY{p}{,} \PY{n}{blit}\PY{o}{=}\PY{k+kc}{True}\PY{p}{)}
+
+        \PY{c+c1}{\PYZsh{} save the animation as an mp4.  This requires ffmpeg or mencoder to be}
+        \PY{c+c1}{\PYZsh{} installed.  The extra\PYZus{}args ensure that the x264 codec is used, so that}
+        \PY{c+c1}{\PYZsh{} the video can be embedded in html5.  You may need to adjust this for}
+        \PY{c+c1}{\PYZsh{} your system: for more information, see}
+        \PY{c+c1}{\PYZsh{} http://matplotlib.sourceforge.net/api/animation\PYZus{}api.html}
+        \PY{c+c1}{\PYZsh{}anim.save(\PYZsq{}basic\PYZus{}animation.mp4\PYZsq{}, fps=30)}
+
+        \PY{n}{html} \PY{o}{=} \PY{n}{HTML}\PY{p}{(}\PY{n}{anim}\PY{o}{.}\PY{n}{to\PYZus{}html5\PYZus{}video}\PY{p}{(}\PY{p}{)}\PY{p}{)}
+        \PY{n}{display}\PY{p}{(}\PY{n}{html}\PY{p}{)}
+        \PY{n}{plt}\PY{o}{.}\PY{n}{close}\PY{p}{(}\PY{p}{)}
+        
+        \PY{k}{return}
+    
+    \PY{k}{def} \PY{n+nf}{plotSurface}\PY{p}{(}\PY{n+nb+bp}{self}\PY{p}{)}\PY{p}{:}
+
+        \PY{n}{X}\PY{p}{,} \PY{n}{Y} \PY{o}{=} \PY{n}{np}\PY{o}{.}\PY{n}{meshgrid}\PY{p}{(}\PY{n+nb+bp}{self}\PY{o}{.}\PY{n}{x}\PY{p}{,}\PY{n+nb+bp}{self}\PY{o}{.}\PY{n}{y}\PY{p}{)}
+
+        \PY{c+c1}{\PYZsh{} Plot the surface.}
+        \PY{n}{plot} \PY{o}{=} \PY{p}{[}\PY{n+nb+bp}{self}\PY{o}{.}\PY{n}{ax}\PY{o}{.}\PY{n}{plot\PYZus{}surface}\PY{p}{(}\PY{n+nb+bp}{self}\PY{o}{.}\PY{n}{X\PYZus{}ax}\PY{p}{,} \PY{n+nb+bp}{self}\PY{o}{.}\PY{n}{Y\PYZus{}ax}\PY{p}{,} \PY{n+nb+bp}{self}\PY{o}{.}\PY{n}{uAnimation}\PY{p}{[}\PY{p}{:}\PY{p}{,}\PY{p}{:}\PY{p}{,}\PY{l+m+mi}{0}\PY{p}{]}\PY{p}{,} \PY{n}{cmap}\PY{o}{=}\PY{n}{cm}\PY{o}{.}\PY{n}{coolwarm}\PY{p}{,} \PY{n}{linewidth}\PY{o}{=}\PY{l+m+mi}{0}\PY{p}{,} \PY{n}{antialiased}\PY{o}{=}\PY{k+kc}{False}\PY{p}{)}\PY{p}{]}
+
+        \PY{c+c1}{\PYZsh{} Add a color bar which maps values to colors.}
+        \PY{n}{cb} \PY{o}{=} \PY{n+nb+bp}{self}\PY{o}{.}\PY{n}{fig}\PY{o}{.}\PY{n}{colorbar}\PY{p}{(}\PY{n}{plot}\PY{p}{[}\PY{l+m+mi}{0}\PY{p}{]}\PY{p}{,} \PY{n}{shrink}\PY{o}{=}\PY{l+m+mf}{0.5}\PY{p}{,} \PY{n}{aspect}\PY{o}{=}\PY{l+m+mi}{5}\PY{p}{)}
+        \PY{n}{cb}\PY{o}{.}\PY{n}{set\PYZus{}label}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Temp (C)}\PY{l+s+s2}{\PYZdq{}}\PY{p}{)}
+        
+        \PY{k}{return} \PY{n}{X}\PY{p}{,} \PY{n}{Y}\PY{p}{,} \PY{n}{plot}\PY{p}{,}
+
+\PY{c+c1}{\PYZsh{} end of class HeatOnRectangle}
+
+ 
+\PY{c+c1}{\PYZsh{} *****}
+\PY{c+c1}{\PYZsh{} Python entry point}
+\PY{c+c1}{\PYZsh{} *****}
+\PY{k}{if} \PY{n+nv+vm}{\PYZus{}\PYZus{}name\PYZus{}\PYZus{}} \PY{o}{==} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{\PYZus{}\PYZus{}main\PYZus{}\PYZus{}}\PY{l+s+s2}{\PYZdq{}}\PY{p}{:}
+    \PY{l+s+sd}{\PYZsq{}\PYZsq{}\PYZsq{}}
+\PY{l+s+sd}{    Process to create an animiated graphic using FuncAnimation (from http://www.acme.byu.edu/wp\PYZhy{}content/uploads/2018/09/Animation.pdf)}
+\PY{l+s+sd}{    1. Compute all data to be plotted.}
+\PY{l+s+sd}{    2. Explicitly define figure object.}
+\PY{l+s+sd}{    3. Define line objects to be altered dynamically.}
+\PY{l+s+sd}{    4. Create function to update line objects.}
+\PY{l+s+sd}{    5. Create FuncAnimation object.}
+\PY{l+s+sd}{    6. Display using plt.show().}
+
+\PY{l+s+sd}{    Approach from the following sources:}
+\PY{l+s+sd}{    https://stackoverflow.com/questions/45712099/updating\PYZhy{}z\PYZhy{}data\PYZhy{}on\PYZhy{}a\PYZhy{}surface\PYZhy{}plot\PYZhy{}in\PYZhy{}matplotlib\PYZhy{}animation}
+\PY{l+s+sd}{    https://pythonmatplotlibtips.blogspot.com/2018/11/animation\PYZhy{}3d\PYZhy{}surface\PYZhy{}plot\PYZhy{}artistanimation\PYZhy{}matplotlib.html}
+\PY{l+s+sd}{    \PYZsq{}\PYZsq{}\PYZsq{}}
+    \PY{n}{s} \PY{o}{=} \PY{o}{\PYZhy{}}\PY{l+m+mf}{0.20}
+    \PY{n}{T} \PY{o}{=} \PY{l+m+mi}{100}
+    \PY{n}{N} \PY{o}{=} \PY{l+m+mi}{500}
+    \PY{n}{L} \PY{o}{=} \PY{l+m+mi}{500}
+    \PY{n}{Nx} \PY{o}{=} \PY{l+m+mi}{10000}
+    \PY{n}{Ny} \PY{o}{=} \PY{l+m+mi}{10000}
+    \PY{n}{Nt} \PY{o}{=} \PY{l+m+mi}{100}
+    \PY{n}{dx} \PY{o}{=} \PY{n}{N}\PY{o}{/}\PY{n}{Nx}
+    \PY{n}{dy} \PY{o}{=} \PY{n}{L}\PY{o}{/}\PY{n}{Ny}    
+    \PY{n}{dt} \PY{o}{=} \PY{n}{mth}\PY{o}{.}\PY{n}{ceil}\PY{p}{(}\PY{l+m+mf}{0.25} \PY{o}{*} \PY{p}{(}\PY{n}{dx}\PY{o}{*}\PY{o}{*}\PY{l+m+mi}{2}\PY{p}{)} \PY{o}{/} \PY{l+m+mi}{2}\PY{p}{)}
+    \PY{n}{debug} \PY{o}{=} \PY{k+kc}{False}
+    \PY{n}{matplotlib}\PY{o}{.}\PY{n}{matplotlib\PYZus{}fname}\PY{p}{(}\PY{p}{)}
+
+    \PY{c+c1}{\PYZsh{}print (\PYZdq{}Num time segs: \PYZdq{}, dt)}
+    \PY{c+c1}{\PYZsh{}sys.exit(\PYZdq{}done\PYZdq{})}
+
+    \PY{c+c1}{\PYZsh{}1. Compute all data to be plotted.}
+    \PY{c+c1}{\PYZsh{}2. Explicitly define figure object.}
+    \PY{n}{r} \PY{o}{=} \PY{n}{HeatOnRectangle}\PY{p}{(}\PY{n}{N}\PY{p}{,} \PY{n}{L}\PY{p}{,} \PY{n}{T}\PY{p}{,} \PY{n}{dx}\PY{p}{,} \PY{n}{dy}\PY{p}{,} \PY{n}{dt}\PY{p}{,} \PY{n}{T}\PY{p}{,} \PY{n}{debug}\PY{p}{)}
+    \PY{n}{r}\PY{o}{.}\PY{n}{applyInitialConditionsAnim}\PY{p}{(}\PY{p}{)}
+    \PY{n}{r}\PY{o}{.}\PY{n}{calcDataAnimation}\PY{p}{(}\PY{n}{T}\PY{p}{)}
+
+    \PY{n}{X}\PY{p}{,} \PY{n}{Y}\PY{p}{,} \PY{n}{plot} \PY{o}{=} \PY{n}{r}\PY{o}{.}\PY{n}{plotSurface}\PY{p}{(}\PY{p}{)}
+    \PY{n}{r}\PY{o}{.}\PY{n}{animateSurfacePlot}\PY{p}{(}\PY{n}{T}\PY{p}{,} \PY{n}{X}\PY{p}{,} \PY{n}{Y}\PY{p}{,} \PY{n}{plot} \PY{p}{)}
+    
+    \PY{n+nb}{print} \PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Done!}\PY{l+s+s2}{\PYZdq{}}\PY{p}{)}    
+\end{Verbatim}
+\end{tcolorbox}
+
+    
+    \begin{Verbatim}[commandchars=\\\{\}]
+<IPython.core.display.Javascript object>
+    \end{Verbatim}
+
+    
+    
+    \begin{Verbatim}[commandchars=\\\{\}]
+<IPython.core.display.HTML object>
+    \end{Verbatim}
+
+    
+    
+    \begin{Verbatim}[commandchars=\\\{\}]
+<IPython.core.display.HTML object>
+    \end{Verbatim}
+
+    
+    \begin{Verbatim}[commandchars=\\\{\}]
+Done!
+    \end{Verbatim}
+
+    \hypertarget{references}{%
+\section{References}\label{references}}
+
+    \hypertarget{derive-vecnabla-urho-phi-and-nabla2-urho-phi}{%
+\subsection{\texorpdfstring{Derive \(\vec{\nabla u}(\rho, \phi)\) and
+\(\nabla^2 u(\rho, \phi)\)}{Derive \textbackslash vec\{\textbackslash nabla u\}(\textbackslash rho, \textbackslash phi) and \textbackslash nabla\^{}2 u(\textbackslash rho, \textbackslash phi)}}\label{derive-vecnabla-urho-phi-and-nabla2-urho-phi}}
+
+    The process to derive the gradient (in two dimensions), which is a
+vector, \begin{equation}
+\vec{\nabla u}(\rho,\phi)
+\label{eq:eq1} \tag{1}
+\end{equation}
+
+and the LaPlacian \begin{equation}
+\nabla^2 u(\rho,\phi) = \vec{\nabla u}(\rho,\phi) \cdot \vec{\nabla u}(\rho,\phi)
+\label{eq:eq2} \tag{2}
+\end{equation}
+
+is to first start with those operators in rectilinear coordinates and
+use the the well-known conversion identities: \begin{equation}
+x = \rho \cdot \cos(\phi)
+\label{eq:eq3a} \tag{3a}
+\end{equation}
+
+\begin{equation}
+y = \rho \cdot \sin(\phi)
+\label{eq:eq3b} \tag{3b}
+\end{equation}
+
+or \begin{equation}
+\rho = \sqrt{x^2 + y^2}
+\label{eq:eq3c} \tag{3c}
+\end{equation}
+
+\begin{equation}
+\phi = \tan^{-1} \left( \frac{y}{x} \right)
+\label{eq:eq3d} \tag{3d}
+\end{equation}
+
+and
+
+\begin{equation}
+\vec{\mathbf{\nabla}} u(x,y) = \frac{\partial u}{\partial x} \hat{\mathbf{x}} + \frac{\partial u}{\partial y} \hat{\mathbf{y}}
+\label{eq:eq4} \tag{4}
+\end{equation}
+
+The next thing to consider, since we are dealing with vectors, is how do
+the cyclindrical coordingate unit vectors \(\hat{\rho}\), \(\hat{\phi}\)
+and \(\hat{z}\) project onto the rectilinear coordinate \(\hat{x}\),
+\(\hat{y}\), and \(\hat{z}\). For the purposes of 2 dimensions, we will
+only consider the \(\hat{\rho}\) and \(\hat{\phi}\) projection onto the
+\(\hat{x}\), \(\hat{y}\) unit vectors. The key to this discussion is
+that unlike \(\hat{x}\) and \(\hat{y}\), \(\hat{\rho}\) and
+\(\hat{\phi}\) are not constant unit vectors; they vary with location.
+Having said that, they are still orthogonal so that
+\[\hat{\rho} \cdot \hat{\rho} = 1\] \[\hat{\phi} \cdot \hat{\phi} = 1\]
+\[\hat{\rho} \cdot \hat{\phi} = 0\]
+
+\(\hat{\rho}\) and \(\hat{\phi}\) will have components along both the
+\(\hat{x}\) and \(\hat{y}\) axes. As such the following is constructed
+\[\hat{\rho} = \cos(\phi) \hat{x} + \sin(\phi) \hat{y}\],
+\[\hat{\phi} = -\sin(\phi) \hat{x} + \cos(\phi) \hat{y}\]
+
+Then the derivates are:
+\[\frac{\partial \hat{\rho}}{\partial \phi} = -\sin(\phi) \hat{x} + \cos(\phi) \hat{y} = \hat{\phi}\]
+\[\frac{\partial \hat{\phi}}{\partial \phi} = -\cos(\phi) \hat{x} - \sin(\phi) \hat{y} = -\hat{\rho}\]
+
+In order to calculate the gradient in cyclindral coordinates based on
+\(\nabla\) operator in rectilinear coordinates, the previous equations
+will need to be changed in terms of \(\hat{x}\) and \(\hat{y}\). This
+can be done using matrx algebra.
+
+\[\left(\begin{array}{cc} \cos(\phi) && \sin(\phi) \\ -\sin(\phi) && \cos(\phi) \end{array} \right) 
+\left( \begin{array}{c} \hat{x} \\ \hat{y} \end{array} \right) = \left( \begin{array}{c} \hat{\rho} \\ \hat{\phi} \end{array} \right)\]
+
+The determinant of the matrix is\\
+\[det = \cos(\phi) \cdot \cos(\phi) - (\sin(\phi) \cdot -\sin(\phi)) = \cos^2(\phi) + \sin^2(\phi) = 1 \]
+
+Therefore,
+\[\left( \begin{array}{c} \hat{x} \\ \hat{y} \end{array} \right) = \frac{1}{det} \left(\begin{array}{cc} \cos(\phi) && -\sin(\phi) \\ \sin(\phi) && \cos(\phi) \end{array} \right) \left( \begin{array}{c} \hat{\rho} \\ \hat{\phi} \end{array} \right)\]
+
+and \[\hat{x} = \cos(\phi) \hat{\rho} - \sin(\phi) \hat{\phi}\]
+\[\hat{y} = \sin(\phi) \hat{\rho} + \cos(\phi) \hat{\phi}\]
+
+Now we use the Chain Rule is used to calculate the partial derivatives
+in terms of \(\rho\) and \(\phi\) based on the conversion identities:
+\begin{equation}
+\frac {\partial u}{\partial x} = \frac {\partial u}{\partial \rho} \frac {\partial \rho}{\partial x} + \frac {\partial u}{\partial \phi}\frac {\partial \phi}{\partial x}
+\label{eq:eq5} \tag{5}
+\end{equation}
+
+\begin{equation}
+\frac {\partial u}{\partial y} = \frac {\partial u}{\partial \rho} \frac {\partial \rho}{\partial y} + \frac {\partial u}{\partial \phi} \frac {\partial \phi}{\partial y}
+\label{eq:eq6} \tag{6}
+\end{equation}
+
+Substituting equations x, and y, we get \begin{equation} \label{eq11111}
+\begin{split}
+\vec{\mathbf{\nabla}} u(x,y) & = \frac{\partial u}{\partial x} \hat{\mathbf{x}} + \frac{\partial u}{\partial y} \hat{\mathbf{y}} \\ & = \left( \frac {\partial u}{\partial \rho}\frac {\partial \rho}{\partial x} + \frac {\partial u}{\partial \phi}\frac {\partial \phi}{\partial x} \right) \left( \cos(\phi) \hat{\rho} - \sin(\phi) \hat{\phi} \right) \\ & + \left(\frac {\partial u}{\partial \rho}\frac {\partial \rho}{\partial y} + \frac {\partial u}{\partial \phi}\frac {\partial \phi}{\partial y} \right)  \left( \sin(\phi) \hat{\rho} + \cos(\phi) \hat{\phi} \right)
+\end{split}
+\end{equation}
+
+From equations 3a and 3b \begin{equation} \label{eq11112}
+\begin{split}
+\frac{\partial \rho}{\partial x} & = \frac{\partial }{\partial x} \left( \sqrt{x^2 + y^2} \right) \\ & = \frac{1}{2} \frac{2 x}{\sqrt{x^2 + y^2}} \\ & = \frac{x}{\sqrt{x^2 + y^2}}  \\ & = \frac{x}{\rho} \\ & = \cos(\phi)
+\end{split}
+\end{equation}
+
+\begin{equation} \label{eq13312}
+\begin{split}b =
+\frac{\partial \rho}{\partial y} & = \frac{\partial }{\partial y} \left( \sqrt{x^2 + y^2} \right) \\ & = \frac{1}{2} \frac{2 y}{\sqrt{x^2 + y^2}} \\ & = \frac{y}{\sqrt{x^2 + y^2}}  \\ & = \frac{y}{\rho} \\ & = \sin(\phi)
+\end{split}
+\end{equation}
+
+As for the derivative of \(\tan^{-1}\left( \frac{y}{x} \right)\) Let
+\[a = \arctan(b)\] \[\therefore b = \tan(a)\] and
+\[db = sec^2(a) \cdot da\] \begin{equation} \label{eq13313}
+\begin{split}
+\frac{da}{db} & = \frac{1}{\sec^2(a)} \\ & = \frac{1}{1 + \tan^2(a)} \\ & = \frac{1}{1 + b^2} 
+\end{split}
+\end{equation} or \[da = \frac{1}{1 + b^2} db \]
+
+Since b = \(\frac{y}{x}\) then \begin{equation} \label{eq13314}
+\begin{split}
+\frac{\partial \phi}{\partial x} & = \frac{1}{1 + \frac{y^2}{x^2}} \cdot \frac{-y}{x^2} \\ & = \frac{x^2}{x^2 + y^2}\cdot \frac{-y}{x^2} \\ & = \frac{-y}{x^2 + y^2} \\ & = \frac{-y}{\rho^2} \\ & = \frac{-y}{\rho}\frac{1}{\rho} \\ & = \frac{-1}{\rho}\sin(\phi)
+\end{split}
+\end{equation} and similarly, \begin{equation} \label{eq13315}
+\begin{split}
+\frac{\partial \phi}{\partial y} & = \frac{1}{1 + \frac{y^2}{x^2}} \cdot \frac{1}{x} \\ & = \frac{x^2}{x^2 + y^2}\cdot \frac{1}{x} \\ & = \frac{x}{x^2 + y^2} \\ & = \frac{x}{\rho^2} \\ & = \frac{x}{\rho}\frac{1}{\rho} \\ & = \frac{1}{\rho}\cos(\phi)
+\end{split}
+\end{equation}
+
+Now we have everything we need to derive the gradient in polar
+coordinates.
+
+Substituting equations x, y and z, we get \begin{equation}
+\begin{split}
+\vec{\mathbf{\nabla}} u(x,y) & = 
+\left( \frac {\partial u}{\partial \rho}\frac {\partial \rho}{\partial x} + \frac {\partial u}{\partial \phi}\frac {\partial \phi}{\partial x} \right) \left( \cos(\phi) \hat{\rho} - \sin(\phi) \hat{\phi} \right) \\ & + \left(\frac {\partial u}{\partial \rho}\frac {\partial \rho}{\partial y} + \frac {\partial u}{\partial \phi}\frac {\partial \phi}{\partial y} \right)  \left( \sin(\phi) \hat{\rho} + \cos(\phi) \hat{\phi} \right) 
+\\ & =
+\left( \frac {\partial u}{\partial \rho} \cos(\phi) + \frac {\partial u}{\partial \phi}\frac {-1}{\rho} \sin(\phi) \right) \left( \cos(\phi) \hat{\rho} - \sin(\phi) \hat{\phi} \right) \\ & + \left(\frac {\partial u}{\partial \rho}\sin(\phi) + \frac {\partial u}{\partial \phi}\frac {1}{\rho} \cos(\phi) \right)  \left( \sin(\phi) \hat{\rho} + \cos(\phi) \hat{\phi} \right)
+\\ & = 
+\Bigg\{ \frac {\partial u}{\partial \rho} \cos^{2}(\phi)\hat{\rho} - \frac {\partial u}{\partial \rho}\cdot \cos(\phi)\sin(\phi) \hat{\phi}+ \frac{\partial u}{\partial \phi} \left(\frac{-1}{\rho} \sin(\phi) \cos(\phi) \hat{\rho} \right) +  \frac{\partial u}{\partial \phi} \frac{1}{\rho} \sin^{2}(\phi) \hat{\phi} \Bigg\} \\ & + \Bigg\{\frac {\partial u}{\partial \rho}\sin^{2}(\phi)\hat{\rho} + \frac {\partial u}{\partial \rho}\cdot \sin(\phi)\cos(\phi) \hat{\phi} + \frac {\partial u}{\partial \phi}\left( \frac{1}{\rho}\sin(\phi)\cos(\phi)\hat{\rho} \right) + \frac{\partial u}{\partial \phi}\frac{1}{\rho}\cos^{2}(\phi) \hat{\phi} \Bigg\}
+\\ & = 
+\frac {\partial u}{\partial \rho} \left( \cos^{2}(\phi) + \sin^{2}(\phi) \right) \hat{\rho} + \frac {\partial u}{\partial \phi} \frac{1}{\rho} \left( \cos^{2}(\phi) + \sin^{2}(\phi) \right) \hat{\phi} 
+\\ & = 
+\frac {\partial u}{\partial \rho} \hat{\rho} + \frac{1}{\rho} \frac {\partial u}{\partial \phi} \hat{\phi} 
+\end{split}
+\end{equation}
+
+Now that we have the gradient in polar coordinates, we can derive the
+LaPlacian using the identity \begin{equation} 
+\begin{split}
+\nabla^2 u(\rho, \phi) & = \vec{\mathbf{\nabla}} u(\rho, \phi) \cdot \vec{\mathbf{\nabla}} u(\rho, \phi) 
+\\ & =
+\left( \frac{\partial u}{\partial \rho} \hat{\rho} + \frac{1}{\rho} \frac{\partial u}{\partial \phi} \hat{\phi} \right) \cdot \left( \frac{\partial u}{\partial \rho} \hat{\rho} + \frac{1}{\rho} \frac{\partial u}{\partial \phi} \hat{\phi} \right) 
+\\ & =
+\frac {\partial u}{\partial \rho} \hat{\rho} \cdot \frac {\partial u}{\partial \rho} \hat{\rho} + 
+\frac {\partial u}{\partial \rho} \hat{\rho} \cdot \frac{1}{\rho} \frac {\partial u}{\partial \phi} \hat{\phi} +
+\frac{1}{\rho} \frac {\partial u}{\partial \phi} \hat{\phi} \cdot \frac {\partial u}{\partial \rho} \hat{\rho} + 
+\frac{1}{\rho} \frac {\partial u}{\partial \phi} \hat{\phi} \cdot \frac{1}{\rho} \frac {\partial u}{\partial \phi} \hat{\phi}
+\\ & =
+\hat{\rho} \frac {\partial u}{\partial \rho} \cdot \left( \frac {\partial u}{\partial \rho} \hat{\rho} \right) + 
+\hat{\rho} \frac {\partial u}{\partial \rho} \cdot \left( \frac{1}{\rho} \frac {\partial u}{\partial \phi} \hat{\phi} \right) +
+\hat{\phi} \frac{1}{\rho} \frac {\partial u}{\partial \phi}  \cdot \left (\frac {\partial u}{\partial \rho} \hat{\rho} \right) + 
+\hat{\phi} \frac{1}{\rho} \frac {\partial u}{\partial \phi} \cdot \left( \frac{1}{\rho} \frac {\partial u}{\partial \phi} \hat{\phi} \right)
+\\ & =
+\hat{\rho} \cdot \Bigg\{\frac {\partial u}{\partial \rho} \frac{\partial u}{\partial \rho} \hat{\rho} + \frac {\partial u}{\partial \rho}\frac{\partial {\hat{\rho}}}{\partial \rho} \Bigg\} 
+\\ & + 
+\hat{\rho} \cdot \Bigg\{\frac {\partial u}{\partial \rho} \left(\frac{1}{\rho} \right) \frac {\partial }{\partial \phi} \hat{\phi} + \frac{1}{\rho}\frac {\partial u}{\partial \rho} \left(\frac {\partial }{\partial \phi} \right)\hat{\phi} + \frac{1}{\rho}\frac {\partial }{\partial \phi}\frac {\partial \hat{\phi}}{\partial \rho}  \Bigg\} 
+\\ & + 
+\hat{\phi} \frac{1}{\rho} \cdot \Bigg\{\frac {\partial u}{\partial \phi} \left( \frac {\partial u}{\partial \rho} \right) \hat{\rho} +  \frac {\partial u}{\partial \rho} \frac {\partial \hat{\rho}}{\partial \phi} \Bigg\} 
+\\ & + 
+\hat{\phi} \frac{1}{\rho^2} \cdot \Bigg\{\frac {\partial u}{\partial \phi} \left(\frac {\partial }{\partial \phi} \right) \hat{\phi} + \frac {\partial u}{\partial \phi} \frac {\partial \hat{\phi} }{\partial \phi} \Bigg\}
+\\ & =
+\hat{\rho} \cdot \Bigg\{\frac {\partial u}{\partial \rho} \left( \frac{\partial u}{\partial \rho} \right) \hat{\rho} + 0 \Bigg\} 
+\\ & + 
+0
+\\ & + 
+\hat{\phi} \frac{1}{\rho} \cdot \Bigg\{0 + \frac {\partial u}{\partial \rho} \hat{\phi}\Bigg\} 
+\\ & + 
+\hat{\phi} \frac{1}{\rho^2} \cdot \Bigg\{\frac {\partial u}{\partial \phi} \frac {\partial }{\partial \phi} \hat{\phi} + 0 \Bigg\}
+\\ & =
+\frac {\partial^2 u}{\partial \rho^2} \hat{\rho} \cdot \hat{\rho}
+\\ & + 
+\frac{1}{\rho} \frac {\partial u}{\partial \rho} \hat{\phi} \cdot \hat{\phi}
+\\ & + 
+\frac{1}{\rho^2} \frac {\partial^2 u}{\partial \phi^2} \hat{\phi} \cdot \hat{\phi}
+\\ & =
+\frac {\partial^2 u}{\partial \rho^2} + \frac{1}{\rho} \frac {\partial u}{\partial \rho} + 
+\frac{1}{\rho^2} \frac {\partial^2 u}{\partial \phi^2} 
+\end{split}
+\end{equation}
+
+    \hypertarget{separation-of-variables-cylindral-coordinates}{%
+\subsection{Separation of Variables Cylindral
+Coordinates}\label{separation-of-variables-cylindral-coordinates}}
+
+    We will start with the general time-dependent diffusion equation
+\begin{equation}
+\nabla^2 u(\rho, \phi, t)  = \frac {\partial u}{\partial t}
+\end{equation} in Cyclindrical Coordinates \begin{equation}
+\frac {\partial^2 u}{\partial \rho^2} + \frac{1}{\rho} \frac {\partial u}{\partial \rho} + 
+\frac{1}{\rho^2} \frac {\partial^2 u}{\partial \phi^2} = \frac {\partial u}{\partial t}
+\end{equation}
+
+The radius of the disk will be a.
+
+The boundary conditions are u(a, \(\phi\), t) = constant u(\(\rho\), 0,
+t) = u(\(\rho\), 0 + 2 \(\pi\), t)
+
+Leveraging the Separation of Variables (SOR) approach, we will assume
+that there is a solution that is the product of 3 functions, each
+independent in the 3 variables \(\rho, \phi\) and t. This means
+\$u(\rho, \phi, t) = R(\rho) \Phi(\phi) T(t) \$
+
+Substituting the solution into the PDE \begin{equation}
+\frac {d^2 R(\rho)}{d \rho^2} \Phi(\phi) T(t) + \frac{1}{\rho} \frac {d R(\rho)}{d \rho} \Phi(\phi) T(t) + 
+\frac{1}{\rho^2} \frac {d^2 \Phi}{ \phi^2} R(\rho) T(t) = \frac {d T(t)}{d t} R(\rho) \Phi(\phi) 
+\end{equation}
+
+Divide both sides by \(R(\rho) \Phi(\phi) T(t)\) \begin{equation}
+\frac {\frac {d^2 R(\rho)}{d \rho^2} \Phi(\phi) T(t) + \frac{1}{\rho} \frac {d R(\rho)}{d \rho} \Phi(\phi) T(t) + 
+\frac{1}{\rho^2} \frac {d^2 \Phi}{ \phi^2} R(\rho) T(t)} {R(\rho) \Phi(\phi) T(t)} = \frac{\frac {d T(t)}{d t} R(\rho) \Phi(\phi)} {{R(\rho) \Phi(\phi) T(t)}} 
+\end{equation} \begin{equation}
+\frac {\frac {d^2 R(\rho)}{d \rho^2} + \frac{1}{\rho} \frac{d R(\rho)}{d \rho}} {R(\rho) }  + 
+\frac {\frac{1}{\rho^2} \frac {d^2 \Phi}{ \phi^2} } {\Phi(\phi)} = \frac{\frac {d T(t)}{d t}}{T(t)} 
+\end{equation}
+
+We see that the right-hand side of the equation is comprised of t only.
+So, it stands that the left-hand side will change at the same rate as
+the right-hand side, so we will set it to equal to \$\lambda \$
+
+\begin{equation}
+\frac {\frac {d^2 R(\rho)}{d \rho^2} + \frac{1}{\rho} \frac{d R(\rho)}{d \rho}} {R(\rho) }  + 
+\frac {\frac{1}{\rho^2} \frac {d^2 \Phi}{ \phi^2} } {\Phi(\phi)} = \frac{\frac {d T(t)}{d t}}{T(t)} = - \lambda
+\end{equation}
+
+Solving the ordinary differential equation in time \begin{equation}
+\frac{\frac {d T(t)}{d t}}{T(t)} = - \lambda
+\end{equation} \begin{equation}
+\frac {d T(t)}{d t} + \lambda T(t) = 0
+\end{equation}
+
+The solution is going to be \begin{equation}
+T(t) = C_{0} e ^ {- \lambda t}
+\end{equation}
+
+Before we can create 2 separate ordinary differential equations for
+R(\(\rho\)) and \(\Phi(\phi)\) we need to do some work to isolate them.
+\begin{equation}
+\frac {\frac {d^2 R(\rho)}{d \rho^2} + \frac{1}{\rho} \frac{d R(\rho)}{d \rho}} {R(\rho) }  + 
+\frac {\frac{1}{\rho^2} \frac {d^2 \Phi}{d \phi^2} } {\Phi(\phi)} = - \lambda
+\end{equation} By rearranging terms \begin{equation}
+\frac {\frac {d^2 R(\rho)}{d \rho^2} + \frac{1}{\rho} \frac{d R(\rho)}{d \rho}}{R(\rho)}  + 
+\lambda = - \frac{\frac{1}{\rho^2} \frac{d^2 \Phi}{d \phi^2}}{\Phi(\phi)} 
+\end{equation} and multiplying both sides by \(\rho^2\) \begin{equation}
+\frac {\rho^2 \frac {d^2 R(\rho)}{d \rho^2} + {\rho} \frac{d R(\rho)}{d \rho}} {R(\rho)}  + 
+\rho^2 \lambda = - \frac{\frac {d^2 \Phi}{d \phi^2}}{\Phi(\phi)}
+\end{equation}
+
+It follows that this implies, in order for the left and right hand sides
+to be equal, they must equal a constant that will be assigned to
+\(\mu\). \begin{equation}
+\rho^2 \frac {1}{R(\rho)} \frac {d^2 R(\rho)}{d \rho^2} + \rho \frac{1}{R(\rho)} \frac{d R(\rho)}{d \rho}   + 
+\rho^2 \lambda = - \frac{1}{\Phi(\phi)} \frac{d^2 \Phi}{d \phi^2}  = \mu
+\end{equation}
+
+Now we can start by solving the the equation in \(\Phi(\phi)\) first.
+\begin{equation}
+\frac{1}{\Phi(\phi)} \frac{d^2 \Phi}{d \phi^2}  = -\mu
+\end{equation} or \begin{equation}
+\frac{d^2 \Phi}{d \phi^2} + \mu \Phi(\phi) = 0
+\end{equation}
+
+We have to analyze the following conditions:
+\(\mu < 0, \mu = 0, \mu > 0\) given the periodic boundary conditions:
+\begin{equation}
+\begin{split}
+\Phi(- \pi) &= \Phi( \pi) \\
+\frac {d\Phi(- \pi)}{d \phi} & = \frac {d \Phi( \pi)}{d \phi}
+\end{split}
+\end{equation}
+
+For \$\mu = 0 \$ : \begin{equation}
+\begin{split}
+\frac{d^2 \Phi}{d \phi^2} + \mu \Phi(\phi) = 0 \\
+\text{becomes:  } \Phi(\phi) = C_0 + C_1 \phi \\
+\text{applying the boundary conditions:  } \\ 
+\Phi(\pi) = \Phi(- \pi) \\
+C_0 + C_1 \pi = C_0 - C_1 \pi \\
+\text{implies } \\
+2  C_1 \pi = 0 \\
+\text{or } \\
+C_1 = 0 \\ 
+\text{so there is one solution for $\mu$ = 0: }
+\Phi(\phi) = C_0 
+\end{split}
+\end{equation}-
+
+For \$\mu \textless{} 0 \$ : \begin{equation}
+\begin{split}
+\frac{d^2 \Phi}{d \phi^2} + \mu \Phi(\phi) &= 0 \\
+\Phi(\phi) &= C_2 e^{\sqrt{\mu}\phi} + C_3 e^{\sqrt{\mu}\phi} \\
+\text{since $\mu$ < 0, the $\sqrt{\mu}$ is complex:  } \\
+\Phi(\phi) &= C_2 (e^{-i \sqrt{\mu}\phi} + e^{i \sqrt{\mu}\phi}) + C_3 (e^{i \sqrt{\mu}\phi} + e^{-i \sqrt{\mu}\phi}) \\
+ &= (C_2 + C_3)e^{-i \sqrt{\mu}\phi} +(C_2 + C_3) e^{i \sqrt{\mu}\phi} \\
+ &= C_4 e^{-i \sqrt{\mu}\phi} + C_5 e^{i \sqrt{\mu}\phi} \\
+ &= C_4 (\cos(\sqrt{\mu}\phi) + i \sin(\sqrt{\mu}\phi)) + C_5 (\cos(\sqrt{\mu}\phi) + i \sin(-\sqrt{\mu}\phi))  \\
+ &= (C_4 + C_5) \cos(\sqrt{\mu}\phi) + (C_4 - C_5) i \sin(\sqrt{\mu}\phi) \\
+ &= C_6 \cos(\sqrt{\mu}\phi) + C_7 \sin(\sqrt{\mu}\phi) \\
+\text{applying the boundary conditions:  } \\
+\Phi(\pi) &= \Phi(- \pi) \\
+C_6 \cos(\sqrt{\mu}\pi) + C_7 \sin(\sqrt{\mu}\pi) &= C_6 \cos(-\sqrt{\mu}\pi) + C_7 \sin(-\sqrt{\mu}\pi)  \\
+\text{applying the identities $\sin(-x)$ = -$\sin(x)$ and $\cos(-x)$ = $\cos(x)$ :  } \\
+C_6 \cos(\sqrt{\mu}\pi) + C_7 \sin(\sqrt{\mu}\pi) &= C_6 \cos(\sqrt{\mu}\pi) - C_7 \sin(\sqrt{\mu}\pi)  \\
+\text{combining terms:  } \\
+2 C_7 \sin(\sqrt{\mu}\pi) &= 0  \\
+C_7 \sin(\sqrt{\mu}\pi) &= 0 
+\end{split}
+\end{equation}
+
+The next step is to determine the non-trivial solutions; that is find
+the eigenvalues so that the sine term evaluates to 0. This will happen
+when \(\sqrt{\mu}\pi\) is a multiple of \(\pi\) or
+
+\begin{equation}
+\begin{split}
+\sqrt{\mu}\pi = m \pi  \text{     where m = 1, 2, 3, ... } \\
+\text{To simplify, we will set $\sqrt{\mu} = m$ or $\mu = m^2$ } \\
+\therefore \\
+\Phi(\phi) &= C \sin(m \phi)
+\end{split}
+\end{equation}
+
+For \$\mu \textgreater{} 0 \$ : \begin{equation}
+\begin{split}
+\frac{d^2 \Phi}{d \phi^2} + \mu \Phi(\phi) &= 0 \\
+\Phi(\phi) &= C_2 e^{\sqrt{\mu}\phi} + C_3 e^{-\sqrt{\mu}\phi} \\
+\text{since $\mu$ > 0, the $\sqrt{\mu}$ is real:  } \\
+\Phi(\phi) &= C_2 (e^{-\sqrt{\mu}\phi} + e^{\sqrt{\mu}\phi}) + C_3 (e^{\sqrt{\mu}\phi} + e^{-\sqrt{\mu}\phi}) \\
+\text{since $\cosh(x)$ = $\frac{e^x + e^{-x}}{2}$} \\
+&= 2 C_2 \cosh(\sqrt{\mu}\phi) + 2 C_3 \cosh(\sqrt{\mu}\phi) \\ 
+&= C_4 \cosh(\sqrt{\mu}\phi) \\
+\text{or }
+&= C_4 \cosh(m\phi) \\
+\text{applying the boundary condition:  } \\
+\Phi(\pi) &= \Phi(-\pi) \\
+C_4 \cosh(m\pi) &= C_4 \cosh(-m\pi) \\
+\text{since $\cosh(-x) = \cosh(x)$, we do not get a useful answer - only an identity} \\
+\text{However, when m $\rightarrow \infty$, $\cosh(x) \rightarrow \infty$ }\\
+&= C_4 \cosh(m\phi) \rightarrow \infty \\
+\text{and this requires $C_4$ = 0 because the function needs to be bounded.}
+\end{split}
+\end{equation}
+
+Therefore, after considering the three conditions
+\(\mu < 0, \mu = 0, \mu > 0\), and using the superposition:
+\begin{equation}
+\begin{split}
+\Phi(\phi) &= C_0 + C \sin(m \phi) \text{    where m = 1, 2, 3, ...} \\
+\text{because each value of m is a solution, we need to sum all of these solutions } \\
+\Phi(\phi) &= C_0 + \sum_{m=1}^{\infty}{C_m \sin(m \phi)} 
+\end{split}
+\end{equation}
+
+We have solved the components for time T(t) and \(\Phi(\phi)\), and the
+last step will be to solve the radial equation \(R(rho)\).
+\begin{equation}
+\begin{split}
+\rho^2 \frac {1}{R(\rho)} \frac {d^2 R(\rho)}{d \rho^2} + \rho \frac{1}{R(\rho)} \frac{d R(\rho)}{d \rho}   + 
+\rho^2 \lambda &= \mu \\
+\rho^2 \frac {1}{R(\rho)} \frac {d^2 R(\rho)}{d \rho^2} + \rho \frac{1}{R(\rho)} \frac{d R(\rho)}{d \rho}   + 
+\rho^2 \lambda - \mu &= 0 \\
+\text{Multiply through by $R(\rho)$,} \\
+\rho^2  \frac {d^2 R(\rho)}{d \rho^2} + \rho \frac{d R(\rho)}{d \rho} + \rho^2 \lambda R(\rho) - \mu R(\rho) &= 0 \\
+\rho^2  \frac {d^2 R(\rho)}{d \rho^2} + \rho \frac{d R(\rho)}{d \rho} + (\rho^2 \lambda - \mu)R(\rho) &= 0 \\
+\text{since $\mu$ = $m^2$} \\
+\rho^2  \frac {d^2 R(\rho)}{d \rho^2} + \rho \frac{d R(\rho)}{d \rho} + (\rho^2 \lambda - m^2)R(\rho) &= 0
+\end{split}
+\end{equation} The resulting differential equation is a Bessel function.
+The derivation can be found here.
+
+The complete solution is therefore: \begin{equation}
+\begin{split}
+u(\rho, \phi, t) &= R(\rho) \Phi(\phi) T(t) \\
+R(\rho) &= J_0(\rho j_{n}) \>\>\>\>\>\>\>\> n = 1, 2, 3, \cdots \\
+&= c J_{m}(\rho j_{m,n})  \>\> m, n = 1, 2, 3, \cdots \\
+\Phi(\phi) &= \sum_{m=1}^{\infty} C_0 + {C_m \sin(m \phi)} \\
+T(t) &= C_{0} e ^ {- \lambda t} = C_{0} e ^ {- j_{m,n}^2 t}  \\
+u(\rho, \phi, t) &= \sum_{m=1}^{\infty} \sum_{n=1}^{\infty} c J_{m}(\rho j_{m,n}) \cdot \left(C_0 + {C_m \sin(m \phi)} \right) \cdot  C_{0} e ^ {- \lambda t} \\
+&= \sum_{m=1}^{\infty} \sum_{n=1}^{\infty} J_{m}(\rho j_{m,n}) \cdot \left(C_0 + {C_m \sin(m \phi)} \right) \cdot  C_{0} e ^ {- j_{m,n}^2 t} \\
+&= \sum_{m=1}^{\infty} \sum_{n=1}^{\infty} C {J_{m}(\rho j_{m,n}) \cdot \left(C_0 + {\sin(m \phi)} \right) \cdot e ^ {- j_{m,n}^2 t} }
+\end{split}
+\end{equation}
+
+    \hypertarget{derive-the-radial-portion-of-the-heat-equation-in-polar-coordinates.}{%
+\subsection{Derive the radial portion of the Heat Equation in Polar
+coordinates.}\label{derive-the-radial-portion-of-the-heat-equation-in-polar-coordinates.}}
+
+    We saw the radial components of partial differential equation include a
+\(\frac{1}{r}\) term. This means that we have be mindful of how the
+center of the circle (\(r = 0\)) affects the overall solution since as
+\(r \rightarrow 0\) the solution will approach \(\infty\). Conveniently,
+the Frobenius method for solving these types of differential equations
+can be employed because it includes a displacement factor around the
+singularity.
+
+\begin{equation}
+\begin{split} 
+\rho^2 \frac {d^2 R(\rho)}{d \rho^2} + \rho \frac{d R(\rho)}{d\rho} + (\rho^2 \lambda - m^2)R(\rho) &= 0 \\
+\text{Substitue $\rho = r \sqrt \lambda$ such that $R(\rho) \rightarrow \overline{R}(r \sqrt \lambda)$}  \\
+r^2 \frac {d^2 \overline{R}(r)}{dr^2} + r\frac{d \overline{R}(r)}{dr} + (r^2 - m^2)\overline{R}(r) &= 0 
+\end{split}
+\end{equation} and the boundary conditions transform to \begin{equation}
+\begin{split} 
+| \overline{R}(0) | \lt \infty \\
+\overline{R}(a \sqrt{\lambda}) = T
+\end{split}
+\end{equation}
+
+Start with the Frobenius equation: \begin{equation}
+\begin{split}
+\overline{R}(r) & = \sum_{n=0}^{\infty} a_n r^{\alpha + n}
+\end{split}
+\end{equation}
+
+Subtituting this into the ODE \begin{equation}
+\begin{split}
+\overline{R}(r) &= r^2 \sum_{n=0}^{\infty} a_{n} (\alpha + n) (\alpha + n - 1) r^{\alpha + n - 2} + r \sum_{n=0}^{\infty} a_{n} (\alpha + n) r^{\alpha + n - 1} + (r^2 - m^2)\sum_{n=0}^{\infty} a_n r^{\alpha + n} \\
+&= r^2 \sum_{n=0}^{\infty} a_n (\alpha + n) (\alpha + n - 1) r^{\alpha + n - 2} + r \sum_{n=0}^{\infty} a_{n} (\alpha + n) r^{\alpha + n - 1} + (r^2 - m^2)\sum_{n=0}^{\infty} a_n r^{\alpha + n} \\
+&= \sum_{n=0}^{\infty} a_{n} (\alpha + n) (\alpha + n - 1) r^{\alpha + n} + \sum_{n=0}^{\infty} a_{n} (\alpha + n) r^{\alpha + n} + (r^2 - m^2)\sum_{n=0}^{\infty} a_n r^{\alpha + n} \\
+&= \sum_{n=0}^{\infty} a_{n} (\alpha + n) (\alpha + n - 1) r^{\alpha + n} + \sum_{n=0}^{\infty} a_{n} (\alpha + n) r^{\alpha + n} + (r^2 - m^2)\sum_{n=0}^{\infty} a_n r^{\alpha + n} \\
+&= \sum_{n=0}^{\infty} a_{n} (\alpha + n) (\alpha + n - 1) r^{\alpha + n} + \sum_{n=0}^{\infty} a_{n} (\alpha + n) r^{\alpha + n} + \sum_{n=0}^{\infty}{a_n r^{\alpha + n + 2}} - m^2 \sum_{n=0}^{\infty}{a_n r^{\alpha + n}}\\
+&= \sum_{n=0}^{\infty} a_{n} (\alpha + n) (\alpha + n - 1) r^{\alpha + n} + \sum_{n=0}^{\infty} a_{n} (\alpha + n) r^{\alpha + n} + \sum_{n=2}^{\infty}{a_{n-2} r^{\alpha + n}} - m^2 \sum_{n=0}^{\infty}{a_n r^{\alpha + n}}\\
+&= \sum_{n=0}^{\infty} \left[ a_{n} (\alpha + n) (\alpha + n - 1) r^{\alpha + n} +
+a_{n} (\alpha + n) r^{\alpha + n} - m^2 a_n r^{\alpha + n} \right] + \sum_{n=2}^{\infty}{a_{n-2} r^{\alpha + n}} \\ 
+&= \sum_{n=0}^{\infty} \left[ a_{n} (\alpha + n) (\alpha + n - 1)  +
+a_{n} (\alpha + n) - m^2 a_n  \right] r^{\alpha + n} + \sum_{n=2}^{\infty}{a_{n-2} r^{\alpha + n}} = 0
+\end{split}
+\end{equation}
+
+The next step will be to find the indicial equation from which, we will
+find a pattern (hopefully), to transform the infinite series into a more
+easily discernable equation. As stated in equation 1, the differential
+equation is equal to 0. In turn, this means that the sum of the
+coefficients of the sum must be zero.
+
+To find the inidicial equation we set n=0. The second term in (3) will
+not participate, until n=2.
+
+\begin{equation}
+\begin{split}
+a_{0} (\alpha) (\alpha - 1)  + a_{0} \alpha - m^2 a_0 &= 0 \\
+a_{0} \left((\alpha) (\alpha - 1)  + \alpha - m^2 \right) &= 0 \\
+a_{0} \left(\alpha^{2} - m^2 \right) &= 0 \\
+\end{split}
+\end{equation}
+
+The non-trivial solution will be when
+
+\begin{equation}
+\begin{split}
+\alpha^{2} &= m^{2} \\
+\text{or} \\
+\alpha &= \pm m
+\end{split}
+\end{equation}
+
+If we take the positive m such that \$\alpha = +m \$ and substitute it
+back into (3) then \begin{equation}
+\begin{split}
+\sum_{n=0}^{\infty} \left[ a_{n} (m + n) (m + n - 1)  +
+a_{n} (m + n) - m^2 a_n  \right] r^{m + n} + \sum_{n=2}^{\infty}{a_{n-2} r^{m + n}} &= \\
+\sum_{n=0}^{\infty} \left[ a_{n} n(n + 2m) \right] r^{m + n} + \sum_{n=2}^{\infty}{a_{n-2} r^{m + n}} &= 0 
+\end{split}
+\end{equation}
+
+Setting n=1 leads to the following \begin{equation}
+\begin{split}
+\left[ a_{1} (2m + 1) \right] r^{m + 1} + \sum_{n=2}^{\infty}{a_{n-2} r^{m + n}} &= 0 \\
+\text{the right-hand term does not participate, so the left-hand term above must be zero} \\
+\left[ a_{1} (2m + 1) \right] r^{m + 1}  &= 0
+\end{split}
+\end{equation} This means that either \(a_{1}\) is zero or 2m + 1 = 0.
+We know that m is an integer and \(m \geq 0\) when we solved the angular
+portion of the LaPlacian. So, \(a_{1} = 0\) and, this means that all odd
+terms will be zero in this recursion.
+
+If that were not the case we would need to consider m =
+\(-\frac{1}{2}\). This solution is covered at qqqqqq.
+
+Now we can look at the \(n \geq 2\) terms. \begin{equation}
+\begin{split}
+\sum_{n=2}^{\infty} \left[ a_{n} (\alpha + n) (\alpha + n - 1)  +
+a_{n} (\alpha + n) - m^2 a_n  \right] r^{\alpha + n} + \sum_{n=2}^{\infty}{a_{n-2} r^{\alpha + n}} &= 0 \\
+\sum_{n=2}^{\infty} \left[ a_{n} (\alpha + n) (\alpha + n - 1)  +
+a_{n} (\alpha + n) - m^2 a_n  + {a_{n-2}}\right]r^{\alpha + n} &= 0 \\
+\left[ a_{n} (\alpha + n) (\alpha + n - 1)  + a_{n} (\alpha + n) - m^2 a_n  + {a_{n-2}}\right] &= 0 \\
+a_{n} \left[(\alpha + n) (\alpha + n - 1) + (\alpha + n) - m^2 \right]  + {a_{n-2}} &= 0 \\
+a_{n} \left[(\alpha + n) \left((\alpha + n - 1) + 1 \right) - m^2 \right]  + {a_{n-2}} &= 0 \\
+a_{n} \left[(\alpha + n) \left((\alpha + n \right) - m^2 \right]  + {a_{n-2}} &= 0 \\
+a_{n} \left[(\alpha + n)^2 - m^2 \right]  + {a_{n-2}} &= 0 \\
+\text{For now, we will work with $\alpha = m$} \\
+a_{n} \left[(m + n)^2 - m^2 \right]  + {a_{n-2}} &= 0 \\
+a_{n} \left[m^2 + 2 m n + n^2 - m^2 \right]  + {a_{n-2}} &= 0 \\
+a_{n} \left[2 m n + n^2 \right]  + {a_{n-2}} &= 0 \\
+a_{n} \left[n (2 m + n) \right]  + {a_{n-2}} &= 0 \\
+a_{n} \left[n (2 m + n) \right]  &= - {a_{n-2}}  \\
+a_{n} &= - \frac{1}{n (2 m + n)} a_{n-2}
+\end{split}
+\end{equation}
+
+Recall that all odd terms are equal to zero. A new index scheme can be
+used so that all terms can be represented with a single index. Let the
+odd terms be represented by n = 2 b + 1 and the even terms represented
+by n = 2 b where b = 0, 1, 2, 3, \ldots{}
+
+Then, the odd terms are defined by \begin{equation}
+\begin{split}
+a_{2b + 1} &= - \frac{a_{2 b + 1 - 2}}{(2b + 1)(2 m + ( 2 b + 1))} \\
+&= - \frac{a_{2 b - 1}}{(2b + 1)(2 m + 2 b + 1)} \\
+&= - \frac{a_{2 b - 1}}{(2b + 1)(2 (m + b) + 1)}
+\end{split}
+\end{equation}
+
+and the even terms \begin{equation}
+\begin{split}
+a_{2b} &= - \frac{a_{2 b - 2}}{(2b)(2 m + 2 b)} \\
+&= - \frac{a_{2 b - 2}}{(2b)(2 m + 2 b)} \\
+&= - \frac{a_{2 b - 2}}{(2b)(2) (m + b)} \\
+&= - \frac{a_{2 b - 2}}{(2^2)(b)(m + b)}
+\end{split}
+\end{equation}
+
+Let's look at the third term (b=3) in this recursive series \(a_{6}\) to
+start teasing out a pattern.\\
+\begin{equation}
+\begin{split}
+a_{2b} &= - \frac{1 }{(2^2)(b)(m + b)} {a_{2 b - 2}} \\
+a_{6} &= - \frac{1 }{(2^2)(3)(m + 3)} {a_{2 \cdot 3 - 2}} \\
+&= - \frac{1 }{(2^2)(3)(m + 3)} {a_{4}} \\
+&= - \frac{- 1 }{(2^2)(3)(m + 3)} \cdot \frac{- 1} {(2^2)(2)(m + 2)} a_{2} \\
+&= - \frac{- 1 }{(2^2)(3)(m + 3)} \cdot \frac{- 1} {(2^2)(2)(m + 2)} \cdot \frac{- 1 }{(2^2)(1)(m + 1)} a_{0} \\
+&= \frac{- 1 \cdot - 1 \cdot - 1  }{(2^2)(2^2)(2^2) \cdot (3)(2)(1) \cdot (m + 3)(m + 2)(m + 1)} a_{0} \\
+&= \frac{(-1)^3}{(2^{2 \cdot 3}) \cdot 3! \cdot (m + 3)(m + 2)(m + 1)} a_{0}
+\end{split}
+\end{equation}
+
+Let's look at the (m + 3)(m + 2)(m + 1) product. This looks like a few
+terms of a (m + 3)! but there are a few terms missing. For b=3 (m + b)!
+is \begin{equation}
+\begin{split}
+(m + 3)! &= (m + 3) \cdot (m + (3 - 1)) \cdot (m + (3 - 2)) \cdot (m + (3 - 3)) \cdot (m - 1) \cdot (m - 2) \cdot (m - 3) \cdots (m - (m - 1))\\
+&= (m + 3) \cdot (m + 2) \cdot (m + 1) \cdot \underbrace{m \cdot (m - 1) \cdot (m - 2) \cdot (m - 3) \cdots (1)}_{m!} \\
+&= (m + 3) \cdot (m + 2) \cdot (m + 1) \cdot m! \\
+\therefore (m + 3) \cdot (m + 2) \cdot (m + 1) &= \frac{(m + 3)!}{m!}
+\end{split}
+\end{equation}
+
+Substiuting this result into the relationship that defines \(a_{2b}\),
+\begin{equation}
+\begin{split}
+a_{2b} &= \frac{ (-1)^3}{(2^{2 \cdot 3}) \cdot 3! \cdot (m + 3)(m + 2)(m + 1)} a_{0} \\
+&= \frac{ (-1)^3}{(2^{2 \cdot 3}) \cdot 3! \cdot \frac{(m + 3)!}{m!}} a_{0} \\
+&= \frac{ (-1)^3 m!}{(2^{2 \cdot 3}) \cdot 3! \cdot (m + 3)!} a_{0}
+\end{split}
+\end{equation}
+
+Generalizing this result \begin{equation}
+\begin{split}
+a_{2b} &= \frac{(-1)^b m!}{(2^{2 \cdot b}) \cdot b! \cdot (m + b)!} a_{0}
+\end{split}
+\end{equation}
+
+Finally, we have \begin{equation}
+\begin{split} 
+\overline{R}(r) &= \sum_{n=0}^{\infty} a_n r^{m + n} \\
+&= \sum_{n=1,3,5 \cdots}^{\infty} a_{n} r^{m + n} + \sum_{n=0,2,4\cdots}^{\infty} a_{n} r^{m + n} \\
+&= \sum_{n=1,3,5 \cdots}^{\infty} a_{2b+1} r^{m + (2b + 1)} + \sum_{n=0,2,4\cdots}^{\infty} a_{2b} r^{m + (2b)} \\
+&= \sum_{b=0}^{\infty} a_{2b+1} r^{m + (2b + 1)} + \sum_{b=0}^{\infty} a_{2b} r^{m + (2b)} \\
+\text{We showed that all odd terms are zero:}\\
+&= \underbrace {\sum_{b=0}^{\infty} a_{2b+1} r^{m + (2b + 1)}}_{0} + \sum_{b=0}^{\infty} a_{2b} r^{m + (2b)} \\
+&= \sum_{b=0}^{\infty} a_{2b} r^{m + (2b)} \\
+&= \sum_{b=0}^{\infty} \frac{(-1)^b m!}{(2^{2b}) \cdot b! \cdot (m + b)!} a_{0} r^{m + 2b} \\
+&= \sum_{b=0}^{\infty} \frac{(-1)^b m!}{(2^{2b}) \cdot b! \cdot (m + b)!} a_{0} r^{m + 2b} \\
+&= r^m\sum_{b=0}^{\infty} \frac{(-1)^b m!}{(2^{2b}) \cdot b! \cdot (m + b)!} a_{0} r^{2b}
+\end{split}
+\end{equation}
+
+Recall Bessel's power series function \begin{equation}
+J_{m}(x) = \sum_{k=0}^{\infty} \frac{-1^k}{2^{2k+m} k! (k + m)!} x^{2k + m}
+\end{equation}
+
+The previous recursion equation can then be rewritten as
+\begin{equation}
+\begin{split} 
+\overline{R}(r) &= \sum_{b=0}^{\infty} \frac{(-1)^b m!}{(2^{2b}) \cdot b! \cdot (m + b)!} a_{0} r^{2b + m}  \\
+&= \sum_{b=0}^{\infty} \frac{(-1)^b m!}{(2^{2b}) \cdot b! \cdot (m + b)!} a_{0} \cdot \frac{2^m}{2^m} r^{2b + m}  \\
+&= a_{0}  m! 2^m \underbrace{\sum_{b=0}^{\infty} \frac{(-1)^b}{(2^{2b + m}) \cdot b! \cdot (m + b)!} r^{2b + m}}_{J_m(r)}   \\
+&= c J_{m}(r)
+\end{split} 
+\end{equation}
+
+Substituting \(\rho\) for r \begin{equation}
+\begin{split} 
+{R}(\rho) &= c J_{m}(\rho \sqrt \lambda) = c J_{m}(\rho j_{m,n}) \\
+\lambda_{m,n} &= j_{m,n}^2 \\
+m, n &= 0, 1, 2 \cdots
+\end{split} 
+\end{equation}
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{4}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{c+c1}{\PYZsh{} Plot first 5 Bessel functions}
+\PY{k+kn}{import} \PY{n+nn}{numpy} \PY{k}{as} \PY{n+nn}{np}
+\PY{k+kn}{from} \PY{n+nn}{matplotlib} \PY{k+kn}{import} \PY{n}{pyplot} \PY{k}{as} \PY{n}{plt}
+\PY{k+kn}{import} \PY{n+nn}{scipy}\PY{n+nn}{.}\PY{n+nn}{special} \PY{k}{as} \PY{n+nn}{spl} 
+
+\PY{c+c1}{\PYZsh{} Generating time data using arange function from numpy}
+\PY{n}{x} \PY{o}{=} \PY{n}{np}\PY{o}{.}\PY{n}{linspace}\PY{p}{(}\PY{l+m+mi}{0}\PY{p}{,} \PY{l+m+mi}{30}\PY{p}{,} \PY{l+m+mi}{1000}\PY{p}{)}
+
+\PY{k}{for} \PY{n}{i} \PY{o+ow}{in} \PY{n+nb}{range}\PY{p}{(}\PY{l+m+mi}{0}\PY{p}{,} \PY{l+m+mi}{5}\PY{p}{)}\PY{p}{:}
+    \PY{n}{J} \PY{o}{=} \PY{n}{spl}\PY{o}{.}\PY{n}{jv}\PY{p}{(}\PY{n}{i}\PY{p}{,} \PY{n}{x}\PY{p}{)}
+    \PY{n}{plt}\PY{o}{.}\PY{n}{plot}\PY{p}{(}\PY{n}{x}\PY{p}{,} \PY{n}{J}\PY{p}{,} \PY{n}{label} \PY{o}{=} \PY{l+s+sa}{r}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{\PYZdl{}J\PYZus{}}\PY{l+s+s1}{\PYZsq{}} \PY{o}{+} \PY{n+nb}{str}\PY{p}{(}\PY{n}{i}\PY{p}{)} \PY{o}{+} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{(x)\PYZdl{}}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
+
+\PY{n}{plt}\PY{o}{.}\PY{n}{legend}\PY{p}{(}\PY{p}{)}
+
+\PY{c+c1}{\PYZsh{} Settng title for the plot in blue color}
+\PY{n}{plt}\PY{o}{.}\PY{n}{title}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Modified Bessel \PYZhy{} First Kind}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{n}{color}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{r}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
+
+\PY{c+c1}{\PYZsh{} Setting x axis label for the plot}
+\PY{n}{plt}\PY{o}{.}\PY{n}{xlabel}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{x}\PY{l+s+s1}{\PYZsq{}}\PY{o}{+} \PY{l+s+sa}{r}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{\PYZdl{}}\PY{l+s+s1}{\PYZbs{}}\PY{l+s+s1}{rightarrow\PYZdl{}}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
+
+\PY{c+c1}{\PYZsh{} Setting x axis label for the plot}
+\PY{n}{plt}\PY{o}{.}\PY{n}{ylabel}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{\PYZdl{}J\PYZus{}v(x)\PYZdl{}}\PY{l+s+s1}{\PYZsq{}}\PY{o}{+} \PY{l+s+sa}{r}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{\PYZdl{}}\PY{l+s+s1}{\PYZbs{}}\PY{l+s+s1}{rightarrow\PYZdl{}}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
+
+\PY{c+c1}{\PYZsh{} Showing grid}
+\PY{n}{plt}\PY{o}{.}\PY{n}{grid}\PY{p}{(}\PY{p}{)}
+
+\PY{c+c1}{\PYZsh{} Highlighting axis at x=0 and y=0}
+\PY{n}{plt}\PY{o}{.}\PY{n}{axhline}\PY{p}{(}\PY{n}{y}\PY{o}{=}\PY{l+m+mi}{0}\PY{p}{,} \PY{n}{color}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{b}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
+\PY{n}{plt}\PY{o}{.}\PY{n}{axvline}\PY{p}{(}\PY{n}{x}\PY{o}{=}\PY{l+m+mi}{0}\PY{p}{,} \PY{n}{color}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{b}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
+
+\PY{c+c1}{\PYZsh{} Finally displaying the plot}
+\PY{n}{plt}\PY{o}{.}\PY{n}{show}\PY{p}{(}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+    
+    \begin{Verbatim}[commandchars=\\\{\}]
+<IPython.core.display.Javascript object>
+    \end{Verbatim}
+
+    
+    
+    \begin{Verbatim}[commandchars=\\\{\}]
+<IPython.core.display.HTML object>
+    \end{Verbatim}
+
+    
+    Zeros of the first 5 Bessel functions can be found in the table below.
+The table is read across for each \(J_m\) as the eigenvalue
+\(j_{m,0}, j_{m,1}, j_{m,2} \cdots\) where m = {[}0, 4{]}
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{3}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{c+c1}{\PYZsh{}Find the first 5 values where each Bessel function is zero (i.e. calculate the eigenvalues)}
+\PY{k+kn}{import} \PY{n+nn}{scipy}\PY{n+nn}{.}\PY{n+nn}{special} \PY{k}{as} \PY{n+nn}{spl} 
+\PY{k+kn}{import} \PY{n+nn}{pandas} \PY{k}{as} \PY{n+nn}{pd} 
+\PY{k+kn}{import} \PY{n+nn}{numpy} \PY{k}{as} \PY{n+nn}{np}
+
+\PY{n}{row\PYZus{}labels} \PY{o}{=} \PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{J0}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{J1}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{J2}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{J3}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{J4}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}
+\PY{n}{data} \PY{o}{=} \PY{p}{\PYZob{}}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{first}\PY{l+s+s1}{\PYZsq{}}\PY{p}{:}\PY{p}{[}\PY{p}{]}\PY{p}{,} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{second}\PY{l+s+s1}{\PYZsq{}}\PY{p}{:} \PY{p}{[}\PY{p}{]}\PY{p}{,} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{third}\PY{l+s+s1}{\PYZsq{}}\PY{p}{:} \PY{p}{[}\PY{p}{]}\PY{p}{,} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{fourth}\PY{l+s+s1}{\PYZsq{}}\PY{p}{:}\PY{p}{[}\PY{p}{]}\PY{p}{,} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{fifth}\PY{l+s+s1}{\PYZsq{}}\PY{p}{:} \PY{p}{[}\PY{p}{]}\PY{p}{\PYZcb{}}
+\PY{n}{i}\PY{o}{=}\PY{l+m+mi}{0}
+\PY{k}{for} \PY{n}{key}\PY{p}{,} \PY{n}{value} \PY{o+ow}{in} \PY{n}{data}\PY{o}{.}\PY{n}{items}\PY{p}{(}\PY{p}{)}\PY{p}{:}
+    \PY{n}{data}\PY{p}{[}\PY{n}{key}\PY{p}{]} \PY{o}{=} \PY{n}{np}\PY{o}{.}\PY{n}{array}\PY{p}{(}\PY{n}{spl}\PY{o}{.}\PY{n}{jn\PYZus{}zeros}\PY{p}{(}\PY{n}{i}\PY{p}{,} \PY{l+m+mi}{5}\PY{p}{)}\PY{p}{)}
+    \PY{n}{i}\PY{o}{=}\PY{n}{i}\PY{o}{+}\PY{l+m+mi}{1}
+    
+\PY{k}{with} \PY{n}{pd}\PY{o}{.}\PY{n}{option\PYZus{}context}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{display.float\PYZus{}format}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+si}{\PYZob{}:3.3f\PYZcb{}}\PY{l+s+s1}{\PYZsq{}}\PY{o}{.}\PY{n}{format}\PY{p}{)}\PY{p}{:}    
+    \PY{n}{df} \PY{o}{=} \PY{n}{pd}\PY{o}{.}\PY{n}{DataFrame}\PY{p}{(}\PY{n}{data}\PY{p}{,} \PY{n}{index}\PY{o}{=}\PY{n}{row\PYZus{}labels}\PY{p}{)}  
+    \PY{n+nb}{print}\PY{p}{(}\PY{n}{df}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+    first  second  third  fourth  fifth
+J0  2.405   3.832  5.136   6.380  7.588
+J1  5.520   7.016  8.417   9.761 11.065
+J2  8.654  10.173 11.620  13.015 14.373
+J3 11.792  13.324 14.796  16.223 17.616
+J4 14.931  16.471 17.960  19.409 20.827
+    \end{Verbatim}
+
+    \hypertarget{how-to-integrate-int-cosaxcosbx-dx}{%
+\subsection{\texorpdfstring{How to integrate
+\(\int cos(ax)cos(bx) dx\)}{How to integrate \textbackslash int cos(ax)cos(bx) dx}}\label{how-to-integrate-int-cosaxcosbx-dx}}
+
+    One approach to solving this type of integral is to start with the
+Product Rule
+\[\frac {d}{dx} (u(x) v(x)) = v(x) \frac {du(x)}{dx} + u(x) \frac {dv(x)}{dx}\].
+
+Let's get started:
+
+Pull one of the constants out of one of the cosine terms. For this
+example, we will use the variable a
+
+\begin{equation}
+I = \int cos(ax)cos(bx) dx
+\end{equation}
+
+Notice that \[\frac {d (sin(ax))}{dx} = a \cdot cos(ax)\] or
+\begin{equation}
+cos(ax) = \frac {1}{a} \frac {d(sin(ax))}{dx}
+\label{eq:eq2} \tag{2}
+\end{equation}
+
+Substitute the equality in \#2 into the original integral to get
+\[I = \frac{1}{a}\int cos(bx) (\frac {d(sin(ax))}{dx}){dx}\]
+
+Set \[u(x) = cos(bx) \to\ \frac{d u(x)}{dx} = -b sin(bx)\] and
+\[\frac {d (v(x))}{dx} = \frac {d (sin(ax))}{dx} \to\ v(x) = sin(ax)\]
+
+Make the necessary subsitutions into the Product Rule and integrate both
+sides: So \[\frac{1}{a}\int cos(bx) (\frac {d(sin(ax))}{dx}){dx}\] with
+the following
+\[\frac {1}{a} \int \frac {d}{dx} (u(x) v(x)) = \frac {1}{a} \int v(x) \frac {du(x)}{dx} + \frac {1}{a} \int u(x) \frac {dv(x)}{dx}\]
+becomes \begin{equation}
+\frac {1}{a} cos(bx) sin(ax) = \frac {1}{a} \int -b \cdot sin(bx) sin(ax) dx + \frac {1}{a} \int cos(bx) \frac {d(sin(ax))}{dx}
+\label{eq:eq3} \tag{3}
+\end{equation}
+
+Rearrange the terms so that the original integral is isolated:
+\[\frac {1}{a} \int cos(bx) \frac {d(sin(ax))}{dx} = \frac {1}{a} cos(bx) sin(ax) + \frac {1}{a} \int b \cdot sin(bx) sin(ax) dx \]
+or \begin{equation}
+I = \frac {1}{a} cos(bx) sin(ax) + \frac {1}{a} \int b \cdot sin(bx) sin(ax) dx 
+\label{eq:eq4} \tag{4}
+\end{equation}
+
+Repeat the previous steps for the integral on the right-hand side using
+the Product Rule again.\\
+\[\frac {1}{a} \int b \cdot sin(bx) sin(ax) dx \] Notice that
+\[\frac {d (sin(ax))}{dx} = a \cdot sin(ax)\] or
+\[a \cdot sin(ax) = \frac {1}{a} \frac {d(-cos(ax))}{dx}\] Or
+\[\frac {1}{a} \int b \cdot sin(bx) sin(ax) dx = \frac {1}{a} \int b \cdot sin(bx) \frac {1}{a} \frac {d(-cos(ax))}{dx} dx \]
+Create the following identities
+\[u(x) = sin(bx) \to\ \frac{d u(x)}{dx} = b \cdot cos(bx)\] and
+\[\frac {d (v(x))}{dx} = \frac {-d (cos(ax))}{dx} \to\ v(x) = cos(ax)\]
+
+Using the Product Rule again \$\frac {1}{a} \int b \cdot sin(bx) sin(ax)
+dx \$ becomes \begin{equation}
+-\frac{1}{a} [ sin(bx) cos(ax) - b \int cos(ax) cos(bx) dx]
+\label{eq:eq5} \tag{5}
+\end{equation} Since \$I = \int cos(ax) cos(bx) dx \$ then equation 5
+becomes \begin{equation}
+-\frac{1}{a} [ sin(bx) cos(ax) - b \cdot I ]
+\label{eq:eq6} \tag{6}
+\end{equation}
+
+From equation 4
+\[I = \frac {1}{a} cos(bx) sin(ax) + \frac {1}{a} \int b \cdot sin(bx) sin(ax) dx \]
+and substituting equation 6 for the right-hand term
+
+\begin{eqnarray*}
+I & = & \frac {1}{a}sin(ax) cos(bx) + \frac{b}{a} \left(- \frac{1}{a} sin(bx) cos(ax) + \frac {b}{a} I + C_2 \right) \\
+& = & \frac {1}{a}sin(ax) cos(bx) - \frac{b}{a^2} sin(bx) cos(ax) + \frac {b^2}{a^2} I + C_2 
+\end{eqnarray*}
+
+Rearrange terms to isolate I
+\[\frac{a^2-b^2}{a^2} I = \frac {1}{a}sin(ax) cos(bx) - \frac{b}{a^2} sin(bx) cos(ax) + C_2\]
+or
+\[I = \frac{a^2}{a^2-b^2} \left( \frac {1}{a}sin(ax) cos(bx) - \frac{b}{a^2} sin(bx) cos(ax) + C_2 \right)\]
+and simplifying
+\[I = \frac{a^2}{a^2-b^2} \left( \frac {a \cdot sin(ax) cos(bx) - b \cdot sin(bx) cos(ax)}{a^2} + C_2 \right)\]
+
+\begin{equation}
+I = \frac{1}{a^2-b^2} \left(a \cdot sin(ax) cos(bx) - b \cdot sin(bx) cos(ax) + C_2 \right)
+\label{eq:eq7} \tag{7}
+\end{equation}
+
+NOTE that \[{a^2} \neq {b^2}\]
+
+Use the following trigonmetric identities to simplify the right-hand
+side further \begin{equation}
+cos(a)sin(b) = \frac{1}{2}sin(a+b) - \frac{1}{2}sin(a-b)
+\label{eq:eq8} \tag{8}
+\end{equation} \begin{equation}
+sin(a)cos(b) = \frac{1}{2}sin(a+b) + \frac{1}{2}sin(a-b)
+\label{eq:eq9} \tag{9}
+\end{equation}
+
+Now \(a \cdot sin(ax) cos(bx) - b \cdot sin(bx) cos(ax)\) can be written
+as follows:
+\[\frac{1}{2} a \cdot sin(a+b)x + \frac{1}{2}a \cdot sin(a-b)x +\frac{1}{2}b \cdot sin(a+b)x - \frac{1}{2}b \cdot sin(a-b)x\]
+
+rearranging the terms \begin{equation}
+\frac{1}{2} \left[(a+b) \cdot sin(a-b)x + (a-b) \cdot sin(a+b)x \right)
+\label{eq:eq10} \tag{10}
+\end{equation} equation 7 becomes
+
+\begin{equation}
+I = \frac{1}{a^2 - b^2} \left(\frac{1}{2} \left[(a+b) \cdot sin(a-b)x + (a-b) \cdot sin(a+b)x \right] \right)
+\label{eq:eq11} \tag{11}
+\end{equation}
+
+Since \({a^2} - {b^2} = (a-b)(a+b)\) equation 11 becomes
+\begin{equation}
+I = \frac{sin(a-b)x}{2(a-b)} + \frac{sin(a+b)x}{2(a+b)}
+\label{eq:eq12} \tag{12}
+\end{equation}
+
+    \hypertarget{how-to-integrate-int-sinaxsinbx-dx}{%
+\subsection{\texorpdfstring{How to integrate
+\(\int sin(ax)sin(bx) dx\)}{How to integrate \textbackslash int sin(ax)sin(bx) dx}}\label{how-to-integrate-int-sinaxsinbx-dx}}
+
+    One approach to solving this type of integral is to start with the
+Product Rule
+\[\frac {d}{dx} (u(x) \cdot v(x)) = v(x) \frac {du(x)}{dx} + u(x) \frac {dv(x)}{dx} .\]
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  Start by defining a variable \(I = \int sin(ax)sin(bx) dx\) as these
+  types of integrals repeat during the derivation process.
+\item
+  Note that \[\frac {d (-cos(ax))}{dx} = a \cdot sin(ax)\] or
+  \[sin(ax) = \frac {1}{a} \frac {d(cos(ax))}{dx} .\]
+\end{enumerate}
+
+This is required to get the integral in the same form as the Product
+Rule. 3. Substitute the equality from \#2 into the original integral to
+get \[I = \frac{1}{a}\int sin(bx) (\frac {d(-cos(ax))}{dx}){dx}\] 4. Set
+the following identities to align with the Product Rule terms:
+\[u(x) = sin(bx) \to\ \frac{d u(x)}{dx} = b \cdot cos(bx)\] and
+\[\frac {d (v(x))}{dx} = -\frac {d (cos(ax))}{dx} \to\ v(x) = -cos(ax)\]
+5. Substitute the terms in \#4 into the Product Rule and integrate both
+sides: \[I = \frac{1}{a}\int sin(bx) (\frac {-d(cos(ax))}{dx}){dx}\]
+
+is equivalent to the following in the Product Rule form:
+
+\[\frac {1}{a} \int \frac {d}{dx} (u(x) \cdot v(x)) = \frac {1}{a} \int v(x) \frac {du(x)}{dx} + \frac {1}{a} \int u(x) \frac {dv(x)}{dx}\]
+
+becomes
+
+\[\frac {-1}{a} sin(bx) cos(ax) = \frac {1}{a} \int sin(bx) \left(\frac {-d(cos(ax))}{dx} \right) dx + \frac {1}{a} b \cdot \int -cos(ax) cos(bx){dx}\]
+6. Rearrange the terms so that the original integral is isolated:
+\[\frac {1}{a} \int sin(bx) \frac {d(-cos(ax))}{dx} = \frac {1}{a} sin(bx) cos(ax) + C_1 - \frac {b}{a} \int cos(bx) cos(ax) dx \]
+or
+\[I = \frac {1}{a} sin(bx) cos(ax) + C_1 - \frac {b}{a} \int cos(bx) cos(ax) dx \]
+7. Repeat the previous steps for the integral on the right-hand side
+using the Product Rule again.\\
+\[\frac {b}{a} \int cos(bx) cos(ax) dx \] Notice that
+\[\frac {d (sin(ax))}{dx} = a \cdot cos(ax)\] so
+\[cos(ax) = \frac {1}{a} \frac {d(sin(ax))}{dx}\] and now the integral
+becomes
+\[\frac {b}{a} \int cos(bx) cos(ax) dx = \frac {b}{a^2}\int  cos(bx) \frac {d(sin(ax))}{dx} dx \]
+8. Create the following identities
+\[u(x) = cos(bx) \to\ \frac{d u(x)}{dx} = -b \cdot sin(bx)\] and
+\[\frac {d (v(x))}{dx} = \frac {d (sin(ax))}{dx} \to\ v(x) = sin(ax)\]
+9. Using the Product Rule again
+\[\frac {b}{a^2} \int cos(bx) cos(ax) dx \] becomes
+\[\frac{b}{a^2} [ cos(bx) sin(ax) + C_1  - b \int sin(ax) sin(bx) dx] \]
+Since \$I = \int sin(ax) sin(bx) dx \$ then,
+\[\frac{b}{a^2} [ cos(bx) sin(ax) + C_1  - b \int sin(ax) sin(bx) dx] \rightarrow \frac{b}{a^2} [ sin(ax) cos(bx) - b I  + C_2]\]
+10. So, from \#6,
+\[I = \frac {1}{a} sin(bx) cos(ax) + C_2 - \frac {b}{a} \int cos(bx) cos(ax) dx \]
+is now
+\[I = \frac {1}{a} \left [\frac {b}{a} \left(cos(ax) sin(bx) + C_2  + b I \right) - sin(bx)cos(ax)\right]\]
+\[I = \frac {b}{a^2} \left( sin(ax) cos(bx) + b I \right) - \frac {1}{a}sin(bx)cos(ax) + C_3\]
+
+where \({C_3}\) is the sum of all of the dangling constants.
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\setcounter{enumi}{10}
+\tightlist
+\item
+  Rearrange terms to isolate I
+  \[\frac{a^2-b^2}{a^2} I = \frac{b}{a^2} sin(ax) cos(bx) - \frac {1}{a}cos(ax) sin(bx) + C_3\]
+  or
+  \[I = \frac{a^2}{a^2-b^2} \left( \frac{b}{a^2} sin(ax) cos(bx) - \frac {1}{a}cos(ax) sin(bx) + C_3\right)\]
+  and simplifying
+  \[I = \frac{a^2}{a^2-b^2} \left( \frac {b \cdot sin(ax) cos(bx) - a \cdot cos(ax) sin(bx)}{a^2} + C_3 \right)\]
+\end{enumerate}
+
+\[I = \frac{1}{a^2-b^2} \left(b \cdot sin(ax) cos(bx) - a \cdot cos(ax) sin(bx) + C_3 \right)\]
+
+NOTE that \[{a^2} \neq {b^2}\] 12. Use the following trigonmetric
+identities to simplify the right-hand side further
+\[cos(a)sin(b) = \frac{1}{2}sin(a+b) - \frac{1}{2}sin(a-b)\]
+\[sin(a)cos(b) = \frac{1}{2}sin(a+b) + \frac{1}{2}sin(a-b)\] 13. Rewrite
+\(b \cdot sin(ax) cos(bx) - a \cdot cos(ax) sin(bx)\) as follows:
+\[\frac{b}{2} \left(sin(a+b)x + sin(a-b)x \right) -\frac{a}{2} \left(sin(a+b)x + sin(a-b)x \right)\]
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\setcounter{enumi}{12}
+\item
+  Rearrange the terms
+  \[\frac{1}{2} \left[(b-a) \cdot sin(a+b)x + (a+b) \cdot sin(a-b)x \right)\]
+  and I becomes
+  \[I = \frac{1}{a^2 - b^2} \left(\frac{1}{2} \left[(b-a) \cdot sin(a+b)x + (a+b) \cdot sin(a-b)x \right] \right) + {C_4}\]
+\item
+  Since \({a^2} - {b^2} = (a-b)(a+b)\) and \(b-a = - \left(a-b\right)\)
+  \[I = \frac{sin(a-b)x}{2(a-b)} - \frac{sin(a+b)x}{2(a+b)}\]
+\end{enumerate}
+
+We can drop the constant \({C_4}\) when the integral is evaluated
+between limits.
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{ }{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+
+\end{Verbatim}
+\end{tcolorbox}
+
+
+    % Add a bibliography block to the postdoc
+    
+    
+    
+\end{document}
