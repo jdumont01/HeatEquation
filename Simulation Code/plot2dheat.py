@@ -1,40 +1,43 @@
 # Filename:  Plot2DHeat.py
-# Purpose:   
+# Purpose:   Plot the temperature distribution for a planar surface over time.
 #
 
 # imports
 import      sys
-import      math as mth
-import      matplotlib.pyplot as plt
-import      matplotlib.animation as animation
 import      matplotlib
-import      timeit
-import      numpy as np
-from        matplotlib import cm
-from        mpl_toolkits.mplot3d import Axes3D
-from        IPython.display import HTML
+import      math                    as mth
+import      matplotlib.pyplot       as plt
+import      matplotlib.animation    as animation
+import      numpy                   as np
+import      time                    as stopwatch
+from        matplotlib              import cm
+from        mpl_toolkits.mplot3d    import Axes3D
+from        IPython.display         import HTML
 
 class HeatOnRectangle():
-    def __init__(self, xmax= 100, ymax= 100, tmax=10, dx = 1, dy= 1, dt=1, k = 4.0, s = 0.25, icTemp = 500, bcXAxisMinY = 0.0, bcXAxisMaxY = 0.0, bcYAxisMinX = 0.0, bcYAxisMaxX = 0.0, frames=50, bDebug = False):
+    def __init__(self, xmax= 100, ymax= 100, tmax=10, dx = 1, dy= 1, k = 4.0, s = 0.25, icTemp = 500, bcXAxisMinY = 0.0, bcXAxisMaxY = 0.0, bcYAxisMinX = 0.0, bcYAxisMaxX = 0.0, bAnimate = True, bForLoopMethod = False, bDebug = False):
     
         #Global debug
         self.bDebug = bDebug
-        
+
         #Init physical grid for calculation
-        self.dt = dt
+        self.dt = (s *(dx)**2)/(k)         # max size of time segments (s)
         self.dx = dx
         self.dy = dy
         self.Tmax = tmax
         self.Xmax = xmax
         self.Ymax = ymax
 
-        self.Tseg = mth.floor(tmax/dt)
+        self.Tseg = mth.floor(tmax/self.dt)
         self.Xseg = mth.ceil(xmax/dx)
         self.Yseg = mth.ceil(ymax/dy)
         
+        # Set calculation method
+        self.bForLoopMethod = bForLoopMethod
+        
         # Set physical parameters
-        self.k = k                  # thermal diffusivity
-        self.s = s                  # vonNeumann 
+        self.k = k                         # thermal diffusivity
+        self.s = s                         # vonNeumann 
         
         # Boundary Conditions
         self.bcXAxisMinY = bcXAxisMinY
@@ -46,8 +49,9 @@ class HeatOnRectangle():
         self.icTemp = icTemp
         
         # for video
-        self.frames = frames
-
+        self.frames = mth.floor(tmax/self.dt)   # max number of frames = number of time segments
+        self.bAnimate = bAnimate
+        
         # initialize matrices
         self.uAnimation_t = np.zeros((self.Xseg, self.Yseg), float)
         self.uAnimation_t1 = np.zeros((self.Xseg, self.Yseg), float)
@@ -65,6 +69,12 @@ class HeatOnRectangle():
     # end of __repr__
 
     def _initialize(self):
+        '''
+            _initialize:  initializes variables
+            
+            args:       none
+            return:     none
+        '''
         if self.bDebug == True:
             print ("_initialize")
             
@@ -73,7 +83,6 @@ class HeatOnRectangle():
         self.fig.set_size_inches(8, 10)
         
         self.ax = self.fig.add_subplot(projection='3d')
-        #self.ax = Axes3D(self.fig, auto_add_to_figure=True)    # Create axes object
         self.fig.add_axes(self.ax)
         self.ax.set_xlabel("x (cm)")
         self.ax.set_ylabel("y (cm)")
@@ -82,9 +91,9 @@ class HeatOnRectangle():
         return 
     # end of _initialize    
 
-    def _applyInitialConditionsAnim(self):
+    def _applyInitialConditions(self):
         '''
-            applyInitialConditionsAnim:
+            _applyInitialConditions:
             updates the temperature array with the temperature set at certain points (center) 
             at the first time segment.
             
@@ -92,7 +101,7 @@ class HeatOnRectangle():
         '''
     
         if (self.bDebug == True):
-            print("_applyInitialConditionsAnim")
+            print("_applyInitialConditions")
         
         #find some grid element near the center
         a = np.int32(np.floor(len(self.x)/2))
@@ -107,18 +116,17 @@ class HeatOnRectangle():
             print (self.uAnimation_t1)
         
         return 
-    # end of _applyInitialConditionsAnim
+    # end of _applyInitialConditions
     
-    def _applyBoundaryConditionsAnim(self):
+    def _applyBoundaryConditions(self):
         '''
-            applyBoundaryConditionsAnim:
-            updates the temperature array with the temperature set at certain points along the 
-            edge(s) of the surface at some time segment t.
+            _applyBoundaryConditions:  Applied the values along the 4 edges to the temperature matrix.
 
+            args:    none    
             return:  none
         '''
-        if debug == True:
-            print(f"In _applyBoundaryConditionsAnim")
+        if self.bDebug == True:
+            print(f"In _applyBoundaryConditions")
 
         #along the x-axis
         self.uAnimation_t[:, 0] = self.bcXAxisMinY        
@@ -153,15 +161,13 @@ class HeatOnRectangle():
             print (self.uAnimation_t1)
         
         return
-    # end of _applyBoundaryConditionsAnim
+    # end of _applyBoundaryConditions
     
     def _initPlot(self):
         '''
-            calcTempNextTimeSegmentAnim2:
-            updates the temperature array for each internal point of the serface
-            at some time segment t.  The equilibrium solution needs to be included.
-
-            Note - for now the equilibrium solution is supported in the x direction only.
+            _initPlot:  Initializes the values of the matrix
+            
+            args:    none
             return:  none
         '''
         if (self.bDebug == True):
@@ -169,8 +175,8 @@ class HeatOnRectangle():
             print (f'x = {self.x}')
             print (f'y = {self.y}')
 
-        #self._applyInitialConditionsAnim()
-        self._applyBoundaryConditionsAnim()        
+        #self._applyInitialConditions()
+        self._applyBoundaryConditions()        
         
         if (self.bDebug == True):
             print (f"uAnimation_t = ")
@@ -180,56 +186,17 @@ class HeatOnRectangle():
         
         return
     # end if _initPlot
-    
-    def _calcTempNextTimeSegmentAnim2(self, frameN, X, Y, plot):
-        '''
-            calcTempNextTimeSegmentAnim2:
-            updates the temperature array for each internal point of the serface
-            at some time segment t.  The equilibrium solution needs to be included.
 
-            Note - for now the equilibrium solution is supported in the x direction only.
+    def _calcTempNextTimeSegmentForLoop(self, frameN):
+        '''
+            _calcTempNextTimeSegmentForLoop: Updates the temperature array for each internal point of the surface
+                    at some time segment t using for-loops.
+
+            args:    frameN:int - the number of the time segment the plot is currently displaying
             return:  none
         '''
         if (self.bDebug == True):
-            print (f'In _calcTempNextTimeSegmentAnim2')
-            print(f'...before mutation')
-            print (f't = {frameN}')
-            print (f'x = {self.x}')
-            print (f'y = {self.y}')
-            print(self.uAnimation_t[:, :])
-            print(self.uAnimation_t1[:, :])
-
-        self.uAnimation_t1[1:-1 , 1:-1] = \
-                self.uAnimation_t[1:-1 , 1:-1] + \
-                (self.s) * (self.uAnimation_t[2: , 1:-1] + \
-                self.uAnimation_t[:-2  ,1:-1] + \
-                self.uAnimation_t[1:-1 ,2: ] + \
-                self.uAnimation_t[1:-1 , :-2] - \
-                4.0 * self.uAnimation_t[1:-1 , 1:-1])
-                
-        self.uAnimation_t = self.uAnimation_t1.copy()
-        
-        if (self.bDebug == True):
-            print(f'...after mutation at time {frameN * self.dt * 1000} ms')
-            print (self.uAnimation_t[:, :])
-            print (self.uAnimation_t1[:, :])
-
-        self._updatePlotObject(frameN, X, Y, plot)
-
-        return 
-    # end of _calcTempNextTimeSegmentAnim2
-    
-    def _calcTempNextTimeSegmentAnim(self, frameN, X, Y, plot):
-        '''
-            calcTempNextTimeSegmentAnim:
-            updates the temperature array for each internal point of the serface
-            at some time segment t.  The equilibrium solution needs to be included.
-
-            Note - for now the equilibrium solution is supported in the x direction only.
-            return:  none
-        '''
-        if (self.bDebug == True):
-            print (f'In _calcTempNextTimeSegmentAnim')
+            print (f'In _calcTempNextTimeSegmentForLoop')
             print (f'...before mutation')
             print (f't = {frameN}')
             print (f'x = {self.x}')
@@ -254,6 +221,79 @@ class HeatOnRectangle():
             print(self.uAnimation_t[:, :])
             print(self.uAnimation_t1[:, :])
         
+        return
+    # end of _calcTempNextTimeSegmentForLoop
+    
+    def _calcTempNextTimeSegmentOpt(self, frameN):
+        '''
+            _calcTempNextTimeSegmentOpt: Updates the temperature array for each internal point of the surface
+                    at some time segment t using numpy's C-optimized vector functions.
+
+            args:    frameN:int - the number of the time segment the plot is currently displaying
+            return:  none
+        '''
+        if (self.bDebug == True):
+            print (f'In _calcTempNextTimeSegmentAndAnimateOpt')
+            print(f'...before mutation')
+            print (f't = {frameN}')
+            print (f'x = {self.x}')
+            print (f'y = {self.y}')
+            print(self.uAnimation_t[:, :])
+            print(self.uAnimation_t1[:, :])
+
+        self.uAnimation_t1[1:-1 , 1:-1] = \
+                self.uAnimation_t[1:-1 , 1:-1] + \
+                (self.s) * (self.uAnimation_t[2: , 1:-1] + \
+                self.uAnimation_t[:-2  ,1:-1] + \
+                self.uAnimation_t[1:-1 ,2: ] + \
+                self.uAnimation_t[1:-1 , :-2] - \
+                4.0 * self.uAnimation_t[1:-1 , 1:-1])
+                
+        self.uAnimation_t = self.uAnimation_t1.copy()
+        
+        if (self.bDebug == True):
+            print(f'...after mutation at time {frameN * self.dt * 1000} ms')
+            print (self.uAnimation_t[:, :])
+            print (self.uAnimation_t1[:, :])
+    
+        return
+    # end of _calcTempNextTimeSegmentOpt
+    
+    def _calcTempNextTimeSegmentAndAnimateOpt(self, frameN, X, Y, plot):
+        '''
+            _calcTempNextTimeSegmentAndAnimateOpt:  Wrapper function to get the matrix results and then update 
+                        the plot object.
+
+            args:    frameN:int - the number of the time segment the plot is currently displaying
+                     X:vector - the X values
+                     Y:vector - the Y values
+                     plot:plot_surface object - the plot to be mutated
+            return:  none
+        '''
+            
+        if self.bDebug == True:
+            print (f'In _calcTempNextTimeSegmentAndAnimateOpt')
+       
+        self._calcTempNextTimeSegmentOpt(frameN)
+        self._updatePlotObject(frameN, X, Y, plot)
+
+        return 
+    # end of _calcTempNextTimeSegmentAndAnimateOpt
+    
+    def _calcTempNextTimeSegmentAndAnimateForLoop(self, frameN, X, Y, plot):
+        '''
+            _calcTempNextTimeSegmentAndAnimateForLoop:  Wrapper function to get the updated matrix for the next time 
+                        segment and then update the plot object.
+            args:    frameN:int - the number of the time segment the plot is currently displaying
+                     X:vector - the X values
+                     Y:vector - the Y values
+                     plot:plot_surface object - the plot to be mutated
+            return:  none
+        '''
+        if self.bDebug == True:
+            print (f'In _calcTempNextTimeSegmentAndAnimateForLoop')
+            
+        self._calcTempNextTimeSegmentForLoop(frameN)
         self._updatePlotObject(frameN, X, Y, plot)
 
         return
@@ -261,11 +301,15 @@ class HeatOnRectangle():
     
     def _updatePlotObject(self, frameN, X, Y, plot):
         '''
-            _updatePlotObject:
+            _updatePlotObject:  Updates the title and the the plot object.
             
+            args:    frameN:int - the number of the time segment the plot is currently displaying
+                     X:vector - the X values
+                     Y:vector - the Y values
+                     plot:plot_surface object - the plot to be mutated
             return:  none
         '''
-        if debug == True:
+        if self.bDebug == True:
             print(f"In _updatePlotObject")
     
         plot[0].remove()
@@ -277,45 +321,80 @@ class HeatOnRectangle():
     
     def _animateSurfacePlot(self):
         '''
-            animateSurfacePlot:
+            _animateSurfacePlot:  Creates an animation of the plot over time.
             
-            return:  none
+            args:       none
+            return:     none
         '''
-        if debug == True:
+        if self.bDebug == True:
             print(f"In _animateSurfacePlot")
-        
+
         # setup the plot parameters
         X, Y, plot = self._createPlotSurface()
         
+        # start the timer after the resources are set
+        startT = stopwatch.perf_counter()
+        
         # call the animator.  blit=True means only re-draw the parts that have changed.
-        anim = animation.FuncAnimation(self.fig, self._calcTempNextTimeSegmentAnim2, self.Tseg, fargs=(X, Y, plot), init_func = self._initPlot, blit=False, repeat = False)   
-        #anim = animation.FuncAnimation(self.fig, self._calcTempNextTimeSegmentAnim, self.Tseg, fargs=(X, Y, plot), init_func = self._initPlot, blit=False)               
-        
-        # save the animation as an mp4.  This requires ffmpeg or mencoder to be
-        # installed.  The extra_args ensure that the x264 codec is used, so that
-        # the video can be embedded in html5.  You may need to adjust this for
-        # your system: for more information, see
-        # http://matplotlib.sourceforge.net/api/animation_api.html
-        
-        #anim.save('basic_animation.mp4', writer='ffmpeg', fps=30)
+        # this will not change the performance calculation as FuncAnimation is a single call. 
+        if self.bForLoopMethod == True:
+            anim = animation.FuncAnimation(self.fig, self._calcTempNextTimeSegmentAndAnimateForLoop, self.Tseg, fargs=(X, Y, plot), init_func = self._initPlot, blit=False)               
+        else:
+            anim = animation.FuncAnimation(self.fig, self._calcTempNextTimeSegmentAndAnimateOpt, self.Tseg, fargs=(X, Y, plot), init_func = self._initPlot, blit=False, repeat = False)   
 
-        #html = HTML(anim.to_html5_video())
-        #display(html)
-        #self._addColorBar(plot)
+        # Stop timer and get the time diff - do not include the time it takes to display the animation.
+        endT = stopwatch.perf_counter()
+        deltaT = endT - startT
+
+        print(f'Simulation completed...after mutation at time {self.frames * self.dt * 1000} ms')
+        print(f'Time to run simulation with FuncAnimation:  {deltaT:.3E} ms')
+        
         plt.show()
-        #plt.close()
         
         return
     # end of _animateSurfacePlot
     
+    def _generateTemperatureResults(self):
+        '''
+            _generateTemperatureResults:  Run the simulation without animation.
+            
+            args:       none
+            return:     none
+        '''
+        if self.bDebug == True:
+            print(f"In _generateTemperatureResults")
+
+        startT = stopwatch.perf_counter()
+        
+        self._initPlot()
+        
+        # to avoid adding a conditional step to the time calculation, the for loop
+        # is du-plicated
+        if self.bForLoopMethod == True:
+            for t in range(1, self.frames + 1):
+                self._calcTempNextTimeSegmentForLoop(t)
+        else:
+            for t in range(1, self.frames + 1):   
+                self._calcTempNextTimeSegmentOpt(t)        
+
+        endT = stopwatch.perf_counter()
+        deltaT = endT - startT
+        
+        print(f'Simulation completed...after mutation at time {self.frames * self.dt * 1000} ms')
+        print(f'Time to run simulation {deltaT:.3E} ms')
+        print(self.uAnimation_t[:, :])
+        
+        return
+    # end of _generateTemperatureResults
+    
     def _createPlotSurface(self):
         '''
-            _createPlotSurface:
-            Creates the resoruces to plot the results on a surface plot.
+            _createPlotSurface:  Creates the resoruces to plot the results on a surface plot.
 
-            return:  meshgrid, and the plot list
+            args:       none
+            return:     meshgrid, and the plot list
         '''
-        if debug == True:
+        if self.bDebug == True:
             print(f"In _createPlotSurface")
     
         X, Y = np.meshgrid(self.x, self.y)
@@ -329,7 +408,14 @@ class HeatOnRectangle():
     # end of _createPlotSurface
 
     def _addColorBar(self, plot):
-        if debug == True:
+        '''
+            _addColorBar:  Adds a colorbar to the plot.  Given that the data changes over time, the simulation must be
+                        run to completion to save the minimum and maximum values for u(x,y,t).
+                        
+            args:       plot:plot_surface - plot_surface object
+            return:     plot - updated plot surface object.
+        '''
+        if self.bDebug == True:
             print(f"In _addColorBar")
     
         # Add a color bar which maps values to colors.
@@ -341,30 +427,52 @@ class HeatOnRectangle():
     
 # end of class HeatOnRectangle
 
-def main(k = 4.0, T = 10, Length = 10, Height = 10, deltaX = 0.1, deltaY = 0.1, bcXMinY = 0.0, bcXMaxY = 0.0, bcYMinX = 0.0, bcYMaxX = 0.0, icTemp = 0.0, s = 0.25, nFrames = 100, debug = False, animate = False):
+def runSimulation(L, H, T, dx, dy, k, s, icTemp, bcXAxisMinY, bcXAxisMaxY, bcYAxisMinX, bcYAxisMaxX, bAnimate, bForLoopMethod, bDebug):
+    '''
+        runSimulation (Public function):  Creates the HeatOnRectangle object and initiates the simulation.
+        
+        args:       L:float - length (L) of the plane; x will range from [0 to L] 
+                    H:float - height (H) of the plane; y will range from [0 to H]
+                    T:float - maximum time (s); t will range from [0 to T] 
+                    dx:float - size of the differential segment along the x-axis
+                    dy:float - size of the differential segment along the y-axis
+                    k:float - diffusion constant
+                    s:float - numerical convergence constant (derived from von Neumann procedure)
+                    icTemp:float - initial condition temperature
+                    bcXAxisMinY:float - boundary condition temperature along the x-axis at y = 0
+                    bcXAxisMaxY:float - boundary condition temperature along the x-axis at y = H
+                    bcYAxisMinX:float - boundary condition temperature along the y-axis at x = 0
+                    bcYAxisMaxX:float - boundary condition temperature along the y-axis at x = Length
+                    bAnimate:bool - True to use FuncAnimation; False otherwise
+                    bForLoopMethod: bool -  True will use the for loop function to calculate the next time segment
+                                            False will use the numpy optimized method
+                    bDebug:bool - include debug statements in stdio 
+        return:     none
+    '''
+    if bDebug == True:
+        print (f'In _runSimulation')
+
+    r = HeatOnRectangle(L, H, T, dx, dy, k, s, icTemp, bcXAxisMinY, bcXAxisMaxY, bcYAxisMinX, bcYAxisMaxX, bAnimate, bForLoopMethod, bDebug)
+        
+    if bAnimate == True:
+        r._animateSurfacePlot()
+    else:
+        r._generateTemperatureResults()
+        
+    return
+# end of _runSimulation
+    
+# -----------------------------------
+def main(L = 10, H = 10, T = 10, dx = 0.1, dy = 0.1, bcXMinY = 0.0, bcXMaxY = 0.0, bcYMinX = 0.0, bcYMaxX = 0.0, icTemp = 0.0, k = 4.0, s = 0.25, bAnimate = False, bForLoopMethod = False, bDebug = False):
 
     if debug == True:
         print(f"In Main")
-
-    Nx = mth.ceil(Length/dx)           # Number of x-axis segments
-    Ny = mth.ceil(Height/dy)           # Number of y-axis segments
-    dt = (s *(dx)**2)/(k)              # max size of time segments (s)
-    nFrames = mth.floor(T/dt)          # max number of frames = number of time segments
     
-    matplotlib.matplotlib_fname()
-
-    #1. Compute all data to be plotted.
-    #2. Explicitly define figure object.
-    r = HeatOnRectangle(Length, Height, T, deltaX, deltaY, dt, k, s, icTemp, bcXAxisMinY, bcXAxisMaxY, bcYAxisMinX, bcYAxisMaxX, nFrames, debug)
-
-    r._animateSurfacePlot()
+    runSimulation(L, H, T, dx, dy, k, s, icTemp, bcXAxisMinY, bcXAxisMaxY, bcYAxisMinX, bcYAxisMaxX, bAnimate, bForLoopMethod, bDebug)
     
-    print ("Done!") 
-
     sys.exit("done")
     
-    pass
-    
+    pass    
 # end of main()
 
 # *****
@@ -376,25 +484,27 @@ if __name__ == "__main__":
     '''
     
     # physical input parameters
-    k = 4.0                             # thermal diffusivity of steel (4 mm2/s)
-    T = 20                             # Number of time frames and max time for simulation (s)
-    L = 10                              # Length of x-axis side (mm)
-    H = 10                              # Length of y-axis side (mm)
+    T = 20                              # Max time for simulation (s) - not runtime.
+    L = 100                             # Length of x-axis side (mm)
+    H = 100                             # Length of y-axis side (mm)
     dx = 1                              # size of x-axis segments (mm)
     dy = 1                              # size of y-axis segments (mm)
+    k = 4.0                             # thermal diffusivity of steel (4 mm2/s)
     s = 0.25                            # von Neumann max value allowed for dt/(k dx) to allow stability
                                         # this will remain a user-defined parameter so that the user can    
                                         # observe the differences in the output.
-    frames = 100                        # frames       
-    initCondTemp = 0.0                  # Initial condition around the center of the plane
+
+    # Initial Conditions (predetermined spots on plane)
+    initCondTemp = 0.0                  
     
     # Boundary Conditions
-    bcXAxisMinY = 5000.0                # BC along the x-axis when y= 0
-    bcXAxisMaxY = 4000.0                # BC along the x-axis when y= L
+    bcXAxisMinY = 10000.0                # BC along the x-axis when y= 0
+    bcXAxisMaxY = 9000.0                # BC along the x-axis when y= L
     bcYAxisMinX = 0.0                   # BC along the y-axis when x = 0
     bcYAxisMaxX = 0.0                   # BC along the y-axis when x = H
     
     debug = False
-    animate = False
+    animate = True
+    useForLoopMethod = False
 
-    main(k, T, L, H, dx, dy, bcXAxisMinY, bcXAxisMaxY, bcYAxisMinX, bcYAxisMaxX, initCondTemp, s, frames, debug, animate)
+    main(L, H, T, dx, dy, bcXAxisMinY, bcXAxisMaxY, bcYAxisMinX, bcYAxisMaxX, initCondTemp, k, s, animate, useForLoopMethod, debug)
