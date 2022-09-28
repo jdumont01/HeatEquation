@@ -22,7 +22,7 @@ from        IPython.display         import HTML
 
 class HeatOnRectangle():
     def __init__(self, xmax= 100, ymax= 100, tmax=10, dx = 1, dy= 1, k = 4.0, s = 0.25, icTemp = 500, bcXAxisMinY = 0.0, bcXAxisMaxY = 0.0, bAnimate = True, bForLoopMethod = False, bDebug = False):
-    
+
         #Global debug
         self.bDebug = bDebug
 
@@ -37,39 +37,39 @@ class HeatOnRectangle():
         self.Tseg = mth.floor(tmax/self.dt)
         self.Xseg = mth.ceil(xmax/dx)
         self.Yseg = mth.ceil(ymax/dy)
-        
+
         # Set calculation method
         self.bForLoopMethod = bForLoopMethod
-        
+
         # Set physical parameters
         self.k = k                         # thermal diffusivity
         self.s = s                         # vonNeumann 
-        
+
         # Boundary Conditions
         self.bcXAxisMinY = bcXAxisMinY
         self.bcXAxisMaxY = bcXAxisMaxY
-        
+
         # Initial Condition
         self.icTemp = icTemp
-        
+
         # for video
         self.frames = mth.floor(tmax/self.dt)   # max number of frames = number of time segments
         self.bAnimate = bAnimate
-        
+
         # initialize matrices
         self.uAnimation_t = np.zeros((self.Xseg, self.Yseg), float)
         self.uAnimation_t1 = np.zeros((self.Xseg, self.Yseg), float)
         self.x = np.arange(0, self.Xseg, 1)
         self.y = np.arange(0, self.Yseg, 1)
-        
+
         self._initialize()
     # end of __init__
-    
+
     def __repr__(self):
         '''
             This method is used to print the results of the function u.
         '''
-        print ("u = {:.1f}".format(u))    
+        print ("u = {:.1f}".format(u))
     # end of __repr__
 
     def _initialize(self):
@@ -82,17 +82,17 @@ class HeatOnRectangle():
         '''
         if self.bDebug == True:
             print ("_initialize")
-            
+
         #init graphical output
         self.fig = plt.figure()                                 # Create figure object
         self.fig.set_size_inches(8, 10)
-        
+
         self.ax = self.fig.add_subplot(projection='3d')
         self.fig.add_axes(self.ax)
         self.ax.set_xlabel("x (cm)")
         self.ax.set_ylabel("y (cm)")
         self.ax.set_zlabel("Temp (C) u(x,y,t)")      
-    
+
         return 
     # end of _initialize    
 
@@ -109,22 +109,22 @@ class HeatOnRectangle():
     
         if (self.bDebug == True):
             print("_applyInitialConditions")
-        
+
         #find some grid element near the center
         a = np.int32(np.floor(len(self.x)/2))
         b = np.int32(np.floor(len(self.y)/2))
-                
+
         self.uAnimation_t[a-1:a+1, b-1:b+1] = self.icTemp
-        
+
         if (self.bDebug == True):
             print (f"uAnimation_t = ")
             print (self.uAnimation_t)
             print (f"uAnimation_t1 = ")
             print (self.uAnimation_t1)
-        
-        return 
+
+            return 
     # end of _applyInitialConditions
-    
+
     def _applyBoundaryConditions(self):
         '''
             _applyBoundaryConditions:  Applied the values along the 4 edges to the temperature matrix.
@@ -141,15 +141,15 @@ class HeatOnRectangle():
         if (self.bDebug == True):
             print (f'applyBoundaryConditionsAnim:  bcXAxisMinY')
             print (self.uAnimation_t)
-        
+
         # along the x-axis on the upper-side of the rectangle, y = H
         self.uAnimation_t[:, -1] = self.bcXAxisMaxY
         if (self.bDebug == True):
             print (f'applyBoundaryConditionsAnim:  bcXAxisMaxY')
             print (self.uAnimation_t)
-        
+
         c = (self.bcXAxisMaxY - self.bcXAxisMinY)/self.Xmax
-        
+
         # along the y-axis; x = 0 
         # Calcualted based on the BCs of the physical problem - 
         # see the Jupyter notebook example for non-homogeneous BCs
@@ -157,11 +157,11 @@ class HeatOnRectangle():
         for j in range(1, len(self.y) - 1): 
             self.uAnimation_t[0, j] = c * (j * self.dy) + self.bcXAxisMinY
             self.uAnimation_t[-1, j] = c * (j * self.dy) + self.bcXAxisMinY
-            
+
         if (self.bDebug == True):
             print (f'applyBoundaryConditionsAnim:  bcYAxisMinX')
             print (self.uAnimation_t)
-        
+
         #along the y-axis on the right-side of the rectangle; x = L
         #self.uAnimation_t[-1, -1:-2] = self.bcYAxisMaxX
         if (self.bDebug == True):
@@ -169,13 +169,13 @@ class HeatOnRectangle():
             print (self.uAnimation_t)
 
         self.uAnimation_t1 = self.uAnimation_t.copy()
-        
+
         if (self.bDebug == True):
             print (f"uAnimation_t = ")
             print (self.uAnimation_t)
             print (f"uAnimation_t1 = ")
             print (self.uAnimation_t1)
-        
+
         return
     # end of _applyBoundaryConditions
     
